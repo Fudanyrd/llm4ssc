@@ -1,0 +1,21 @@
+pdfs/
+
+# browser extensions
+ext/
+
+# archive
+*.txz
+*.zip
+
+# template downloaded from https://media.neurips.cc/Conferences/NeurIPS2025/Styles.zip
+neurips_2025.*
+
+# Makefile/latex generated
+main.bib
+*.aux
+*.log
+*.out
+*.pdf
+*.bbl
+*.blg
+
