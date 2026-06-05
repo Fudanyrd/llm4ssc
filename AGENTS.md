@@ -16,6 +16,7 @@ Requires `pdflatex`, `bibtex`, and the `neurips_2025` style package (not in repo
 | Path | Purpose |
 |---|---|
 | `main.tex` | Paper entrypoint, preamble, title, abstract, bibliography |
+| `src/search.txt` | Search query templates for literature review (not included in paper) |
 | `src/*.tex` | Per-section content (add new sections here) |
 | `dataset/*.bib` | Bibliographic entries by source (acm, arxiv, ieee, sciencedirect, misc) |
 | `pdfs/*/` | Reference PDFs mirroring the .bib sources |
