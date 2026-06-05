@@ -10,3 +10,9 @@ main.pdf: $(TEXSRC) main.bib
 	bibtex main.aux
 	pdflatex $(TEXFLAGS) main.tex
 	pdflatex $(TEXFLAGS) main.tex
+
+
+.PHONY: clean
+clean:
+	- rm -f *.aux *.bbl *.blg *.log *.out
+

@@ -3,6 +3,27 @@
   forward/backward searching the reference list.
 }
 
+@book{brooks1987no,
+  title={No silver bullet},
+  author={Brooks, Frederick and Kugler, H},
+  year={1987},
+  publisher={April}
+}
+
+@book {mythicalmanmonth,
+  title = {The Mythical Man-Month: Essays on Software Engineering},
+  author = {Brooks, Frederick P.},
+  year = {1995},
+  publisher = {Addison-Wesley Professional}
+}
+
+@misc {sonatype2024report,
+  title = {Sonatype’s 10th Annual State of the Software Supply Chain Report},
+  author = {Sonatype},
+  year = {2024},
+  url = {https://www.sonatype.com/press-releases/sonatypes-10th-annual-state-of-the-software-supply-chain-report},
+}
+
 @misc{copilotsecurity,
   title={Asleep at the Keyboard? Assessing the Security of GitHub Copilot's Code Contributions}, 
   author={Hammond Pearce and Baleegh Ahmad and Benjamin Tan and Brendan Dolan-Gavitt and Ramesh Karri},
@@ -43,3 +64,108 @@
   url = {https://www.usenix.org/system/files/usenixsecurity24-deng.pdf},
   year={2024}
 }
+
+@article{vulrepairusingllm,
+author = {de-Fitero-Dominguez, David and Garcia-Lopez, Eva and Garcia-Cabot, Antonio and Martinez-Herraiz, Jose-Javier},
+title = {Enhanced automated code vulnerability repair using large language models},
+year = {2024},
+issue_date = {Dec 2024},
+publisher = {Pergamon Press, Inc.},
+address = {USA},
+volume = {138},
+number = {PA},
+issn = {0952-1976},
+url = {https://doi.org/10.1016/j.engappai.2024.109291},
+doi = {10.1016/j.engappai.2024.109291},
+journal = {Eng. Appl. Artif. Intell.},
+month = dec,
+abstract={This research addresses the complex challenge of automated repair of code vulnerabilities, vital for enhancing digital security in an increasingly technology-driven world. The study introduces a novel and efficient format for the representation of code modification, using advanced Large Language Models (LLMs) such as Code Llama and Mistral. These models, fine-tuned on datasets featuring C/C++ code vulnerabilities, significantly improve the accuracy and adaptability of automated code repair techniques. A key finding is the enhanced repair accuracy of these models when compared to previous methods such as VulRepair, which underscores their practical utility and efficiency. The research also offers a critical assessment of current evaluation metrics, such as “Perfect Predictions”, and their limitations in reflecting the true capabilities of automated repair models in real-world scenarios. Following this, it underscores the importance of using test datasets devoid of train samples, emphasizing the need for dataset integrity to enhance the effectiveness of LLMs in code repair tasks. The significance of this work is its contribution to digital security, setting new standards for automated code vulnerability repair and paving the way for future advancements in the fields of cybersecurity and artificial intelligence. The study does not only highlight the potential of LLMs in enhancing code security but also fosters further exploration and research in these crucial areas.},
+numpages = {13},
+keywords = {Automated code repair, Deep learning, Large language models, Vulnerability repair, Mistral, Code llama}
+}
+
+@misc{vulmaster,
+ abstract = {The advances of deep learning (DL) have paved the way for automatic software vulnerability repair approaches, which effectively learn the mapping from the vulnerable code to the fixed code. Nevertheless, existing DL-based vulnerability repair methods face notable limitations: 1) they struggle to handle lengthy vulnerable code, 2) they treat code as natural language texts, neglecting its inherent structure, and 3) they do not tap into the valuable expert knowledge present in the expert system.
+To address this, we propose VulMaster, a Transformer-based neural network model that excels at generating vulnerability repairs through data-centric innovation. Specifically, VulMaster introduces the utilization and combination of various types of input data, including complete vulnerable code of any size, vulnerable code structures, and expert knowledge from the CWE system. Additionally, VulMaster leverages the collaboration between two Large Language Models (LLMs), CodeT5 and ChatGPT: CodeT5 acts as the customizable backbone LLM, fine-tuned with the training data, while ChatGPT supplements by providing missing relevant inputs to CodeT5. We evaluated VulMaster on a real-world C/C++ vulnerability repair dataset comprising 1,754 projects with 5,800 vulnerable functions. The experimental results demonstrated that VulMaster exhibits substantial improvements compared to the learning-based state-of-the-art vulnerability repair approach. Specifically, VulMaster improves the EM, BLEU, and CodeBLEU scores from 10.2\% to 20.0\%, 21.3\% to 29.3\%, and 32.5\% to 40.9\%, respectively.},
+ archiveprefix = {arXiv},
+ author = {Xin Zhou and Kisub Kim and Bowen Xu and DongGyun Han and David Lo},
+ eprint = {2401.15459},
+ primaryclass = {cs.SE},
+ title = {Multi-LLM Collaboration + Data-Centric Innovation = 2x Better Vulnerability Repair},
+ url = {https://arxiv.org/abs/2401.15459},
+ year = {2024}
+}
+
+@article{llm4se,
+  title={Towards an understanding of large language models in software engineering tasks},
+  author={Zheng, Zibin and Ning, Kaiwen and Zhong, Qingyuan and Chen, Jiachi and Chen, Wenqing and Guo, Lianghong and Wang, Weicheng and Wang, Yanlin},
+  journal={Empirical Software Engineering},
+  volume={30},
+  number={2},
+  pages={50},
+  year={2025},
+  url={https://arxiv.org/abs/2308.11396},
+  abstract={Large Language Models (LLMs) have drawn widespread attention and research due to their astounding performance in text generation and reasoning tasks. Derivative products, like ChatGPT, have been extensively deployed and highly sought after. Meanwhile, the evaluation and optimization of LLMs in software engineering tasks, such as code generation, have become a research focus. However, there is still a lack of systematic research on applying and evaluating LLMs in software engineering. Therefore, this paper comprehensively investigate and collate the research and products combining LLMs with software engineering, aiming to answer two questions: (1) What are the current integrations of LLMs with software engineering? (2) Can LLMs effectively handle software engineering tasks? To find the answers, we have collected related literature as extensively as possible from seven mainstream databases and selected 123 timely papers published starting from 2022 for analysis. We have categorized these papers in detail and reviewed the current research status of LLMs from the perspective of seven major software engineering tasks, hoping this will help researchers better grasp the research trends and address the issues when applying LLMs. Meanwhile, we have also organized and presented papers with evaluation content to reveal the performance and effectiveness of LLMs in various software engineering tasks, guiding researchers and developers to optimize.},
+  publisher={Springer}
+}
+@article{llm4se2,
+  title={Large language models for software engineering: A systematic literature review},
+  author={Hou, Xinyi and Zhao, Yanjie and Liu, Yue and Yang, Zhou and Wang, Kailong and Li, Li and Luo, Xiapu and Lo, David and Grundy, John and Wang, Haoyu},
+  journal={ACM Transactions on Software Engineering and Methodology},
+  volume={33},
+  number={8},
+  pages={1--79},
+  url={https://dl.acm.org/doi/pdf/10.1145/3695988},
+  year={2024},
+  publisher={ACM New York, NY}
+}
+
+@article{llmcodequality,
+title = {Using LLMs to enhance code quality: A systematic literature review},
+journal = {Information and Software Technology},
+volume = {190},
+pages = {107960},
+year = {2026},
+issn = {0950-5849},
+doi = {https://doi.org/10.1016/j.infsof.2025.107960},
+url = {https://www.sciencedirect.com/science/article/pii/S095058492500299X},
+author = {Nawaf Alomari and Moussa Redah and Ahmad Ashraf and Mohammad Alshayeb},
+keywords = {Code quality, LLM, systematic literature review},
+}
+
+@misc{xzincident,
+  title = {xz-util Has Embedded Malicious Code},
+  author = {NIST Advisory},
+  year = {2024},
+  url = {https://scout.docker.com/vulnerabilities/id/CVE-2024-3094},
+}
+
+
+@article{asare2023github,
+  title={Is github’s copilot as bad as humans at introducing vulnerabilities in code?},
+  author={Asare, Owura and Nagappan, Meiyappan and Asokan, Nirmal},
+  journal={Empirical Software Engineering},
+  volume={28},
+  number={6},
+  pages={129},
+  year={2023},
+  url = {https://arxiv.org/pdf/2204.04741},
+  publisher={Springer}
+}
+
+@misc{linuxincident,
+  title = {Revertion of all umn.edu commits},
+  url = {https://lore.kernel.org/lkml/20210421130105.1226686-1-gregkh@linuxfoundation.org},
+  year = {2021},
+  author = {Greg Kroah-Hartman},
+}
+@article{wu2021feasibility,
+  title={On the feasibility of stealthily introducing vulnerabilities in open-source software via hypocrite commits},
+  author={Wu, Qiushi and Lu, Kangjie},
+  journal={Proc. Oakland},
+  volume={17},
+  year={2021},
+  url = {http://www.coding-guidelines.com/code-data/OpenSourceInsecurity.pdf},
+  publisher={sn}
+}
+

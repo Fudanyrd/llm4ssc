@@ -1,0 +1,85 @@
+\section{Introduction}\label{sec:intro}
+
+%^C In one paragraph: introduce Software Supply Chain.
+%^C How vital is it? (accelerate development; provide usable components)
+%^C How severely has it been compromised?
+%^C List examples of SSC attacks (xz-utils, log4j)
+\par The Software Supply Chain (SSC) lies at the basis of modern digital
+infrastructure. By providing software developers with reusable libraries,
+packages, or components which can be assembled into a larger software
+project\citep{sscdirection}, Software Supply Chain is integral to boosting
+development efficacy, improving software quality, and reduce development cost
+\citep{brooks1987no,mythicalmanmonth}. However, the number of Software Supply
+Chain attacks, which come in the form of ransomware, backdoor, or vulnerability
+injected into the source code, has grown exponentially over recent years.
+This can be evidenced by the surging number of Common Vulnerabilities and
+Exposures (CVEs), indicating the wide susceptibility of softwares. Also
+Sonatype, an software supply chain platform, observed an annual increase of 156\%
+in number of malicious packages, reaching a startling number of 704,102 identified
+since 2019 \citep{sonatype2024report}. Such proliferation of malicious or
+vulnerable components,
+coupled with exploding consumption of open-source packages and failure to
+promptly respond to reported vulnerabilities such as CVEs 
+\citep{sonatype2024report}, have profound
+implications to the security and trustworthiness of Software Supply Chain,
+and negative impacts on the developers' willingness to incorporate those
+packages to their own work. 
+For instance, the \texttt{xz-util} incident is an example of deliberately
+injected backdoor, allowing the attacker to intercept sensitive data
+or gain control of the affected machine \citep{xzincident}, and a trust
+is undermined.
+Despite all on-going efforts for security 
+assurance and attack detection (e.g. \citep{konala25metadata,11022932,10695665}),
+the sheer volume of risk to the
+security of Software Supply Chain calls for new methods of governance.
+
+%^C Introduce Large language model, in a more general way.
+\par Recent advancements in Large Language Models (LLMs), including
+improvement in model's intrinsic
+capabilities\citep{llmsurvey,overviewllm,csllm} and the introduction of
+enhancement techniques, contributed to their active involvement in
+software engineering tasks, such as code suggestion, code completion, and
+code review \citep{llm4se, llm4se2}. Because of their contextual reasoning
+capabilities and understanding of code intent, several studies have
+explored leveraging these language models for guarding the security
+of Software Supply Chain, in the following ways:
+
+\begin{itemize}
+  \item \textit{Attack Detection} (e.g. 
+  \citep{singla2023empiricalstudyusinglarge,syed2025agenticaiautonomousdefense}).
+  By studying source code patterns of ransomware and backdoor,
+  Large Language Models can be leveraged as classifiers to
+  help package distribution sites eliminate malicious software components.
+
+  \item \textit{Vulnerability Detection} (e.g. \citep{11022932,10695665,10628694}).
+  By analyzing threat models and
+  searching for Common Weakness Enumerations (CWEs) in the source code, 
+  vulnerabilities can be fixed before they persist to a released package.
+
+  \item \textit{Vulnerability Repair} (e.g.
+  \citep{vulrepairusingllm,vulmaster}). Large Language Models can be
+  leveraged for automated vulnerability resolution, thereby accelerating
+  the process of patching a known vulnerability before exploitation.
+\end{itemize}
+
+\par Nevertheless, Large Language Models may be used for both guarding the
+security of Software Supply Chain, and also attacking it. This study reviews and
+hypothesizes several scenarios where LLM can assist attacking Software
+Supply Chain, and provides their respective attack vector.
+
+\par To the best of our knowledge, this study is the first to examine the
+Large Language Model's implications of the security of Software Supply Chain.
+It makes the following contributions:
+
+\begin{itemize}
+  \item A Systematic Literature Review on "LLM for Software Supply Chain",
+  which identifies research advancements and gaps.
+
+  \item A literature review of studies in which LLM is leveraged for attacking
+  purposes. We also hypothesize other possible scenarios.
+
+  \item Insights into mitigation of LLM-assisted Software Supply Chain
+  attacks. They serve as guidance to responsible and ethical use of LLM
+  in Software Supply Chain.
+\end{itemize}
+
