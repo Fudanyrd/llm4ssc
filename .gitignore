@@ -12,6 +12,8 @@ neurips_2025.*
 
 # Makefile/latex generated
 main.bib
+main.md
+main.docx
 *.aux
 *.log
 *.out

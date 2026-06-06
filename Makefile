@@ -19,3 +19,26 @@ ar.txz: $(TEXSRC) main.bib
 clean:
 	- rm -f *.aux *.bbl *.blg *.log *.out
 
+UID = $(shell id -u)
+GID = $(shell id -g)
+PWD = $(shell pwd)
+
+PANDOCFLAGS = --verbose --data-dir=. --citeproc --bibliography=main.bib
+PANDOCFLAGS += --resource-path=.  
+
+main.md: $(TEXSRC) main.bib
+	docker run --rm \
+       --volume "$(PWD):/data" \
+       --user $(UID):$(GID) \
+       pandoc/minimal:latest-ubuntu \
+	   $(PANDOCFLAGS) \
+	   main.tex -o main.md
+
+main.docx: $(TEXSRC) main.bib
+	docker run --rm \
+	   --volume "$(PWD):/data" \
+	   --user $(UID):$(GID) \
+	   pandoc/minimal:latest-ubuntu \
+	   $(PANDOCFLAGS) \
+		--number-sections=true \
+	   main.tex -o main.docx
