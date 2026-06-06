@@ -1,0 +1,164 @@
+\section{Methodology}\label{sec:method}
+
+This study adopts Systematic Literature Review (SLR) methodology for 
+identifying relevant studies and research gaps. This SLR follows 
+guidance provided by B. Kitchenham et al. \citep{segress} and
+S. Keele et al. \citep{slrguidese}, and incorporates three major
+steps: \textbf{Planning the Search} (\ref{subsec:search}), 
+\textbf{Study Selection} (\ref{subsec:stusel}),
+and \textbf{Data Analysis}.
+
+\subsection{Search Strategy}\label{subsec:search}
+
+As shown in Figure~\ref{fig:stusel},
+we employed \textbf{Precise Search Strategy} \citep{optimalsearch}
+for article search, i.e., 
+we crafted the search string to maximize the relevance 
+of resulting studies. More specifically, we followed the following three steps
+in order to establish a set of relevant studies:
+
+
+\begin{enumerate}
+ \item Conduct an automated search based on our crafted search string;
+ \item Screen the title and abstract of all articles and filter by
+       inclusion/exclusion criteria;
+ \item Conduct snowballing search on the result of previous step.
+\end{enumerate}
+
+\begin{figure}[ht]
+
+\begin{tikzpicture}[
+  every node/.style={fill=white},
+  str/.style={rectangle, rounded corners, draw=blue!60, fill=blue!5, very thick, minimum size=10mm},
+  db/.style={rectangle, rounded corners, draw=green!60, fill=green!5, very thick, minimum size=10mm},
+  filt/.style={rectangle, rounded corners, draw=red!60, fill=red!5, very thick, minimum size=10mm},
+  res/.style={rectangle, rounded corners, draw=yellow!60, fill=yellow!5, very thick, minimum size=10mm},
+]
+
+  \node[str] (sstr) {
+    \begin{tabular} {l}
+      \textbf{Search String} \\
+       \\
+      LLM, \\
+      Software Supply Chain, \\
+      \\
+    \end{tabular}
+  };
+
+  \node[db] (sdb) [right=of sstr] {
+    \begin{tabular} {ll}
+      \multicolumn{2}{l}{\textbf{Search Database}}\\
+      ACM & 238 \\
+      arXiv & 7 \\
+      IEEE & 106 \\
+      ScienceDirect & 69 \\
+      & \\
+    \end{tabular}
+  };
+
+
+  \node[filt] (sfilt) [right=of sdb] {
+    \begin{tabular} {ll}
+      \multicolumn{2}{l}{\textbf{Apply Selection Criteria}}\\
+      \multicolumn{2}{l}{\small (from Table~\ref{tab:criteria})} \\
+      ACM & ??\\
+      arXiv & ?? \\
+      IEEE & ??\\
+      ScienceDirect & ?? \\
+    \end{tabular}
+  };
+
+  \node[res] (result) [below=of sdb] {
+    \begin{tabular}{l}
+      \\
+      \textbf{Results in:} \\
+      ??? Studies \\
+      \\
+    \end{tabular}
+  };
+
+  \draw [thick, ->] (sstr.east) -- (sdb.west);
+  \draw [thick, ->] (sdb.east) -- (sfilt.west);
+  \draw [thick, ->] (sfilt.south) |- node[xshift=-0.5cm] {
+    \begin{tabular}{l}
+    Snowballing \\
+    Search \\
+    \end{tabular}
+  } (result.east);
+\end{tikzpicture}
+
+\caption{The process of study identification and selection.}
+\label{fig:stusel}
+\end{figure}
+
+\par Our search string needs to combine two sets of keywords, one related
+to Software Supply Chain, the other concerned about Large Language Models.
+For automated search, intra-set keywords are OR-ed, and inter-set keywords
+are AND-ed to form the final search string.
+The complete set of keywords are as follows:
+
+\begin{itemize}
+  \item \textit{Phrases related to Software Supply Chain}: supply chain, software.
+
+  \item \textit{Phrases related to LLMs}: language model, agent.
+
+  \item \textit{Phrases of task definition}: attack, breach, defend, detect, vulnerability.
+\end{itemize}
+
+\par It is important to note that the list of keywords related to 
+LLMS we setup includes \textit{agent}, that does not seem to be
+necessarily related to LLMs. The reason for this is that we observe 
+recent prevalence in LLM-based agentic technologies \citep{agents} (the technique
+behind many AI assistant, such as OpenClaw and OpenCode) ,
+and that we want to avoid omitting
+articles related to our research as much as possible.
+
+\paragraph*{Search Databases}. After determining the search strings, we
+employed the SLR Tool\citep{slrtool} and conducted
+an automated search across four widely used databases
+\footnote{ACM Digital Library, arXiv, IEEE Xplore, Science Direct}, 
+which cover most published
+articles and preprints of under-review articles. Given that the first
+LLM trained on code corpus was published in 2021\citep{codex}, 
+we focus our search on articles
+published from that year onward. The search results from each database were
+merged and deduplicated with SLR Tool\citep{slrtool}.
+As a result, we obtained 238 articles from ACM Digital Library, 
+7 articles from arXiv, 106 articles from IEEE Xplore, 
+and 69 articles from Science Direct.
+
+\subsection{Study Selection}\label{subsec:stusel}
+
+\par Using our search strategy, we initially obtained 420 articles
+that potentially relate to our research. Next, we further 
+evaluate the relevance of these articles based on our inclusion
+and exclusion criteria, as shown in Table~\ref{tab:criteria}.
+Unlike previous SLRs \citep{llm4se2}, we do not exclude papers
+published in workshop track, because their reference lists
+may benefit our snowballing search.
+In this step, we conducted a manual selection by examining the 
+title, abstract, and keywords of each article, resulting
+in a total of ?? papers.
+
+\begin{table}[ht]
+  \centering
+  \caption{Inclusion and Exclusion Criteria for Study Selection}
+  \label{tab:criteria}
+\begin{tabular}{ll}
+\thickhline
+\multicolumn{2}{c}{\textbf{Inclusion Criteria}} \\ \hline
+    (1) & The study claims an LLM is used. \\
+    (2) & The study involves Software Supply Chain. \\
+    (3) & The study is full-text available. \\
+     & \\
+\thickhline
+\multicolumn{2}{c}{\textbf{Exclusion Criteria}} \\ \hline
+    (1) & The study is concerned with LLM supply chain. \\
+    (2) & Non-English written literature. \\
+    (3) & Tool demos and editorials; \\
+     & \\
+\thickhline
+\thickhline
+\end{tabular}
+\end{table}
+

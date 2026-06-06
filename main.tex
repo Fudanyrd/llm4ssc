@@ -10,11 +10,19 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 \usepackage{xcolor}         % colors
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{decorations.pathreplacing,calligraphy}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
 \bibliographystyle{plainnat}
-% \usepackage{natbib}
 
 \bibpunct{[}{]}{,}{n}{}{;}
 \setcitestyle{numbers, square}
+\newcommand{\thickhline}{\noalign{\hrule height 1.5pt}}
+
 \title{LLMs for Software Supply Chain Security: Boon or Bane?}
 
 \newcommand{\myemail}{22307140045@m.fudan.edu.cn}
@@ -47,15 +55,7 @@
 
 
 \input{src/intro.tex}
-
-%^C Methodology? Systematic Literature Review
-%^C What is the search string?
-%^C exclusion criteria? Exclude "LLM supply chain" studies (e.g. data poisioning)
-%^C The results? (e.g. # articles obtained)
-\section{Study Selection}
-
-% FIXME: try using cite* commands.
-\par Test \citep{11022932}.
+\input{src/method.tex}
 
 {
 \small
