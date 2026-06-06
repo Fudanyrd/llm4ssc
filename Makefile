@@ -2,6 +2,10 @@ TEXFLAGS = --halt-on-error
 BIBSRC = dataset/*.bib
 TEXSRC = main.tex src/*.tex
 
+# The figures (small logos) hardly change.
+# But they are part of the dependencies.
+FIGURES = logo/*
+
 main.bib: $(BIBSRC)
 	cat $^ > $@
 
@@ -12,8 +16,8 @@ main.pdf: $(TEXSRC) main.bib
 	pdflatex $(TEXFLAGS) main.tex
 
 # an archive of source code.
-ar.txz: $(TEXSRC) main.bib
-	tar cJvf ar.txz main.tex ./src main.bib neurips_2025.sty
+ar.txz: $(TEXSRC) main.bib $(FIGURES)
+	tar cJvf ar.txz main.tex ./src main.bib neurips_2025.sty $(FIGURES)
 
 .PHONY: clean
 clean:

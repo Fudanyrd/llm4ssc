@@ -1,0 +1,168 @@
+\section{Research Question 1 -- LLM Optimization for Software}\label{sec:rq1}
+
+\par This RQ studies how LLMs are enhanced and optimized for software
+engineering tasks, which aims to provide necessary background knowledge
+for later sections. We anticipate that these LLM-enhancement techniques
+can be equally generalized to Software Supply Chain tasks, because both
+kinds of tasks involve code comprehension and code summary. 
+
+\par This RQ is conducted by a case-study of \texttt{opencode},
+followed by a
+brief literature review of collected LLM-enhancement techniques.
+\texttt{opencode} is "an open source AI coding agent" capable of
+a series of software engineering tasks, such as code completion,
+code review, and code summary \citep{opencode}. The case-study
+of \texttt{opencode}'s internal implementation helps us identify 
+the enhancement techniques for this RQ: \textit{Prompting}\citep{promptsurvey} 
+and \textit{Agentic Framework}\citep{agents,agentsurvey}.
+Other techniques include \textit{Retrieval Augmented Generation}
+(RAG) \citep{ragsurvey} and \textit{Fine-tuning}, both of which have 
+limited flexibility and will not be discussed.
+
+\paragraph*{Prompt Engineering} Also known as \textit{prompting},
+this technique tunes the Large Language Model's input (the prompt)
+to boost performance. Common kinds of prompting
+techniques include zero
+shot learning \citep{zeroshot1, zeroshot2} (update the prompt
+for multiple rounds and observe LLM's performance), few
+shot learning \citep{fewshot1, fewshotlearner} (provide
+a few examples of expected answer)
+and/or chain-of-thought \citep{cotprompt}
+prompting (CoT, explicitly ask the LLM to show its reasoning process
+), as well as their variants.
+In practice, these prompts are loaded on-demand by the user,
+via a group of text files known as \textit{Plugins} 
+(\texttt{opencode} terminology) and \textit{Skills}
+(\texttt{OpenClaw}\citep{openclaw} terminology).
+By providing helpful contexts including task definition ("What to achieve")
+instructions ("How to achieve"), these media of prompts
+are helping LLMs yield better outcomes, and have become
+a crucial part of today's AI ecosystem (also part of
+Software Supply Chain).
+
+\paragraph*{Agentic Framework} It is also known as \textit{harness engineering}
+(a term that seems to be defined as the construction of
+agent's execution infrastructure \citep{harnessengineeringalgorithm}.).
+The objective of agentic framework is to equip the Large Language Model
+with the ability to explore its surrounding \textit{environment},
+to execute actions, and to keep memory of its context.
+With such autonomous execution capability,
+agentic frameworks such as \texttt{opencode} free software developers
+from the tedious task of turning the idea or requirement into
+executable source code.
+
+\par From the documentation of \texttt{opencode}\citep{opencode},
+we are able to build a mental model of the architecture of LLM-based
+agents, as shown in Figure~\ref{fig:agentarch}.
+
+\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}[
+         every node/.style={fill=white},
+		llm/.style={rectangle, rounded corners, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
+        prompt/.style={rectangle, rounded corners, draw=green!60, fill=green!5, very thick, minimum size=5mm},
+        others/.style={rectangle, rounded corners, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+    ]
+
+		\node[llm, align=left] (lm) {
+			\par \includegraphics[width=2cm]{logo/llm.png}
+			\par ~LLM~
+		};
+
+		\node[others, align = center] (parser) [left=of lm, xshift=-2cm] {
+			\begin{tabular}{l}
+                \makebox[2.5cm][c]{Response Parsing} \\
+				\includegraphics[width=2.5cm]{logo/parsing.png}
+			\end{tabular}
+		};
+
+		\node[prompt] (prompt) [right=of lm] {
+			\begin{tabular}{l}
+                \makebox[2cm][c]{Prompt} \\
+                \includegraphics[width=2cm]{logo/prompt.png}
+            \end{tabular}
+		};
+
+        \node[others] (tool) [below=of lm] {
+			\par \includegraphics[width=2cm]{logo/tool.png}
+            \par ~Tool~
+        };
+        \node[others] (mem) [above=of lm] {
+            \par \includegraphics[width=2cm]{logo/memory.png}
+            \par Memory
+        };
+
+        \draw[thick, ->] (lm) -- node[]
+                    {generate} (parser);
+        \draw[thick, ->] (prompt) -- (lm);
+		\draw[thick, ->] (parser.south) |- node[xshift=1cm]
+									{Invoke} 
+									(tool.west);
+		\draw[thick, ->] (parser.north) |- node[xshift=1cm]
+									{Update}
+									(mem.west);
+		% memory --(Task Description, Plan, ...) --> prompt
+        \draw[thick, ->] (mem) -| node[xshift=1cm]
+                    {Task Description, Prompt Plugins} 
+                    (prompt);
+	    % tool --(output filtering/summarizing) --> prompt
+        \draw[thick, ->] (tool) -| node[xshift=1cm]
+                    {output filtering/summarizing} 
+                    (prompt);
+		% memory --(RAG) --> llm
+        \draw[dotted, ->] (mem) -| node[yshift=-1.5cm]
+                    {MCP} 
+                    (lm);
+    \end{tikzpicture}
+
+    \caption{Typical Architecture of LLM-based agents.}
+    \label{fig:agentarch}
+\end{figure}
+
+\begin{itemize}
+ \item \textbf{A tool set}, usually consisting of file editor, 
+   command executor (e.g. the shell), 
+   and language server \footnote{useful for code completion and go-to definition}.
+  It is the tools that enable the agent to autonomously interact with
+  the execution environment and complete task on behalf of user.
+
+ \item A \textbf{memory module} providing essential task contexts,
+  including task definition, project documentation, and 
+  suggesting next action for the LLM.
+  Also, the LLM can dynamically update (refine) the content of memory.
+  The memory is useful for resuming previously interrupted tasks
+  (without starting from scratch).
+
+ \item \textbf{The Large Language Model}, which serves as the foundation 
+  of the agent, generates responses based on the
+  prompt and the contexts provided by the memory module, and then
+  invokes tools based on the generated response.
+
+ \item A \textbf{Response Parser} is used to parse the LLM's 
+     response and determine the next action, which can be either 
+     invoking a tool or updating the memory module.
+
+ \item Occasionally \textbf{MCP Server}. The Model Context Protocol
+ (MCP) aims to provide a unified and open standard for exchanging
+ data between the LLM-based agent and its execution environment,
+  thereby improving simplicity and reliability \citep{mcpintro}.
+ For the benefits of this protocol, the LLM-based agent
+  can safely access remote data source (managed by MCP server)
+  via tool invocation (i.e. the agent is an MCP client).
+ 
+\end{itemize}
+
+
+\paragraph*{RQ1 -- Summary}
+
+\begin{itemize}
+  \item This RQ began with a case-study with \texttt{opencode}
+  \citep{opencode}, from which a set of LLM optimization
+  techniques are identified -- \textit{Prompting} and
+  \textit{Agentic Framework}.
+
+  \item This RQ laid the foundation for later sections.
+  Through the study of the ecosystem of LLM-based
+  agents, their security weaknesses can be discussed.
+\end{itemize}
+
