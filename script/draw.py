@@ -25,7 +25,7 @@ def plot_trend(years: range, trend_data: dict[str, list[int]], ofile: str):
     [Example graph](https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html#grouped-bar-chart-with-labels)
     """
     x = np.arange(len(years))  # the label locations
-    width = 0.20  # the width of the bars
+    width = 0.75 / len(trend_data)  # the width of the bars
     multiplier = 0
 
     fig, ax = plt.subplots(layout='constrained')
@@ -172,6 +172,13 @@ if __name__ == "__main__":
         for entry in db.entries:
             paper_to_year[entry['ID']] = int(entry['year'])
         del db
+
+    dom_data_file = os.path.join('dataset', 'domain.json')
+    dom_data = load_json(dom_data_file)
+    tgt = PlotTrend([dom_data_file], os.path.join('logo', 'domtrend.pdf'), dom_data, paper_to_year)
+    tgt.generate(); tgt.register(depfile); del tgt
+    tgt = PlotPie([dom_data_file], os.path.join('logo', 'dompie.pdf'), dom_data)
+    tgt.generate(); tgt.register(depfile); del tgt
 
     rq2_data_file = os.path.join('dataset', 'rq2.json')
     rq2_data = load_json(rq2_data_file)
