@@ -1,0 +1,44 @@
+
+\section{RQ2: In what ways are LLMs employed to secure SSC?}
+\label{sec:rq2}
+
+\par This Research Question examines how LLM defend Software Supply Chain
+security, by means of reviewing collected literature. We begin by 
+introducing the major attack vectors of SSC breaches, and then review
+how LLMs are leveraged to mitigate these kinds of attacks. 
+
+% IMPORTANT NOTE: this is not my original work.
+\paragraph*{What are the attack vectors against SSC?} L. Williams et al.
+categorized the three major attack vectors as follows\citep{sscdirection}:
+
+
+% these are my words, i.e. paraphrased.
+\begin{itemize}
+  \item (Vector 1) Through malwares or vulnerabilities injected into open-source packages/libraries
+  and other third-party dependencies (e.g. the \texttt{xz-util} incident 
+  \citep{xzincident});
+
+  \item (Vector 2) Through compromising the build infrastructure (e.g. CI/CD) where the
+  software component is tested, packed and deployed;
+
+  \item (Vector 3) Through targeting human developers involved in software development,
+  such as \textit{Social Engineering}.
+\end{itemize}
+
+\subsection{Mitigation of Malware and Vulnerabilities}\label{subsec:vec1}
+
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{logo/vec1taxo.pdf}
+
+  \caption{Taxonomy of Attack Vector 1 Mitigation Techniques. \\
+   {\small \textit{det.} is short for the word detection; \textit{lib.} is short for the word library.} \\
+   {\small Enclosure of circles implies logical enclosure; the size of circle
+   is roughly proportional to \# studies obtained.}
+  }
+\end{figure}
+
+\subsection{Mitigation of Build System Vulnerabilities}\label{subsec:vec2}
+
+
