@@ -45,15 +45,53 @@ is studied. Apart from a few surveys in which \textit{attack vector 3} is introd
 (e.g. \cite{sscdirection}), we have found no studies proposing defense to
 this kind of SSC attack.
 
+\subsection{Mitigation of Malware and Vulnerabilities}\label{subsec:vec1}
+
+\paragraph*{Which components of Software Supply Chain are secured by LLM?}
+We made a qualitative analysis of components whose security is protected
+by LLM-based methodologies. We classify components of Software Supply Chain
+by the type of hosted artifacts, as follows:
+
+\begin{itemize}
+  \item \textit{Package Manager} usually hosts artifacts compiled from the
+  source code which can be directly imported as dependencies. Examples
+  of this include \texttt{npm}, \texttt{maven}, and \texttt{PyPI}
+  \footnote{These sites provide both the source code and compiled byte-code.}.
+
+  \item \textit{Code-hosting Platforms} such as GitHub provides the source code
+  of repositories as-is. A \textit{repository} is a collection of
+  source code files which is often embedded as a dependency.
+
+  \item \textit{AI models} include both providers of pre-trained weights
+  and their applications (e.g. LLM-integrated Application (LIA)).
+
+  \item \textit{LLM Harness} refers to utilities of the Large Language Model
+  enabling it to autonomously run tasks. Providers of MCP server,
+  skills and plugins of LLM-based agents fall in this category.
+\end{itemize}
+
+\par The trend analysis result of SSC components are shown in Figure~\ref{fig:rq2dom}.
+We found that while \textit{Package Manager} and \textit{Code-hosting Platform}
+pertain the majority of "LLM for SSC Security" studies, recent years
+have seen a burst of research interest in the supply chain security of Artificial
+Intelligence models and harness. The 4 kinds of components distribute
+almost evenly in terms of the number of publications.
+
 % Generated from dataset/domain.json
 % "package manager" : e.g. npm, maven, PyPI, etc.
 % "AI Model" (platform) e.g. HuggingFace and application (e.g. LLM-integrated app
 % \cite{10.1145/3756681.3757083})
 % "Agent harness" includes Skills, plugins, MCP, etc.
-\paragraph*{Which components of Software Supply Chain are secured by LLM?}
+\begin{figure}[ht]
+  \centering
+  \subcaptionbox{Distribution by year.}
+    {\includegraphics[width=0.45\textwidth]{logo/domtrend.pdf}}
+  \subcaptionbox{Distribution by components of SSC.}
+    {\includegraphics[width=0.45\textwidth]{logo/dompie.pdf}}
 
-\subsection{Mitigation of Malware and Vulnerabilities}\label{subsec:vec1}
-
+  \caption{Distribution of Publications across Selected 4 Components.}
+  \label{fig:rq2dom}
+\end{figure}
 
 \begin{figure}[ht]
   \centering
