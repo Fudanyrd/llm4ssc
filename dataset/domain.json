@@ -18,7 +18,7 @@
       "10.1145/3756681.3757083",
       "10705238"
   ],
-  "agent harness": [
+  "LLM harness": [
     "skillfortify26",
     "wang2025sokunderstandingvulnerabilitieslarge",
     "10.1145/3814959",
@@ -28,12 +28,7 @@
     "10.1016/j.jss.2025.112656",
     "11418008"
   ],
-  "smart contract": [
-    "10846030",
-    "10.1016/j.jss.2025.112593",
-    "10.1016/j.jss.2025.112635"
-  ],
-  "code repo": [
+  "code-hosting platform": [
     "10.1007/s10664-026-10832-4",
     "10.1007/s11334-024-00556-3",
     "10.1109/ICSE48619.2023.00089",

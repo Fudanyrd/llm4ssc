@@ -10,6 +10,14 @@ from typing import Any
 
 THIS_FILE = os.path.join('script', 'draw.py')
 
+# this script appends generated image to the following targets:
+# e.g. `FIGURES += generated.pdf`
+MAKEFILE_TARGETS = [
+    "FIGURES"
+]
+
+INTERPRETER = 'python3'
+
 """
 Utilities.
 """
@@ -60,6 +68,13 @@ class Target():
         Write the dependency info in a .d file which Makefile can load.
         """
         fobj.write(f"{self.output}: {' '.join(self.deps)} {THIS_FILE}\n")
+        # the command to generate self.output:
+        fobj.write('\t')
+        fobj.write(f"{INTERPRETER} {THIS_FILE}\n")
+
+        for tgt in MAKEFILE_TARGETS:
+            fobj.write(f"{tgt} += {self.output}\n")
+
 
     def generate(self):
         raise NotImplementedError("Target is an abstract class")
