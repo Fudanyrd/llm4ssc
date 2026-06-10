@@ -211,5 +211,90 @@ and fine-tuning \citep{11495563},  was proposed by  J. Xu et al.  for mapping
 NVD reports to localizing affected libraries and versions.
 
 \subsection{Mitigation of Build System Vulnerabilities}\label{subsec:vec2}
+We have found a total of 4 publications on attack vector 2 mitigations.
+An overview of build system threats are shown in Figure~\ref{fig:vec2ov}.
+Vadisetty et al.\citep{11158656} and Bandara et al.\citep{10631014} 
+separately investigated potential risk to the cloud computing infrastructure,
+which is the basis of code-hosting platform's \textit{workflow} and
+package manager's packaging program.
+
+\begin{figure}[ht]
+\centering
+
+\begin{tikzpicture}[
+  every node/.style={fill=white},
+  src/.style={rectangle, rounded corners, draw=blue!60, fill=blue!5, very thick, minimum size=2cm},
+  bin/.style={rectangle, rounded corners, draw=green!60, fill=green!5, very thick, minimum size=2cm},
+  proc/.style={rectangle, rounded corners, draw=red!60, fill=red!5, very thick, minimum size=2cm},
+  inner/.style={rectangle, rounded corners, draw=yellow!60, fill=yellow!5, very thick, minimum size=2cm},
+]
+
+\node[proc] (repo) {
+\begin{tabular}{c}
+  \textbf{Code-hosting Plat-} \\
+  \textbf{form} \\
+
+  \begin{tikzpicture}[
+  every node/.style={rectangle, rounded corners, draw=yellow!60, fill=yellow!5, very thick, minimum size=10mm},
+  ]
+   \node[] (foo) { Workflow (*) };
+  \end{tikzpicture}
+\end{tabular}
+};
+
+\node[proc] (pm) [below=of repo, yshift=-1cm] {
+\begin{tabular}{c}
+  \textbf{Package Manager} \\
+  \begin{tikzpicture}[
+  every node/.style={rectangle, rounded corners, draw=yellow!60, fill=yellow!5, very thick, minimum size=10mm},
+  ]
+   \node[] (foo) { Packaging (*) };
+  \end{tikzpicture}
+\end{tabular}
+};
+
+\node[src] (code) [left=of pm, xshift=-1cm, yshift=2cm] {
+\begin{tabular}{c}
+  \textbf{Source code} \\
+  \includegraphics[width=1.5cm]{./logo/prompt.png}
+\end{tabular}
+};
+
+\node[bin] (artifact) [right=of pm, xshift=1cm, yshift=2cm] {
+\begin{tabular}{c}
+  \textbf{Built Artifact} \\
+  \includegraphics[width=1.5cm]{./logo/memory.png}
+\end{tabular}
+};
+
+\draw[thick, ->] (code.north) |- (repo.west);
+\draw[thick, ->] (code.south) |- (pm.west);
+\draw[thick, ->] (repo.east) -| (artifact.north);
+\draw[thick, ->] (pm.east) -| (artifact.south);
+
+\end{tikzpicture}
+
+\caption{Overview of build system vulnerabilities. \\
+ {\small Each potential risk is marked with an asterisk "*".}
+}
+\label{fig:vec2ov}
+\end{figure}
+
+\par Code hosting platforms such as \texttt{GitHub} allow the user to
+define a set of \textit{workflows} which are automatically executed
+when the source code changes. These \textit{workflows} perform code linting,
+software testing, as well as building artifact. Vulnerabilities
+in the \textit{workflows} may allow attackers to steal sensitive 
+information or inject malicious code.  To this end, Benedetti
+et al. proposed an automated approach to assess the safety of
+\textit{GitHub Actions} \citep{10.1145/3560835.3564554}, resulting
+in a total of 24,905 security issues across 50 code repositories.
+
+\par Certain Software Supply Chain attacks rely on the weakness of
+build system (e.g. that resides in a package manager) to
+inject malicious code. To alleviate these attacks, Hassanshahi et al.
+built a tool to detect the presence of logical discrepancies between
+the source code and built artifact, a step towards transparency and
+trustworthiness of software packaging process \citep{10.1145/3605770.3625213}.
 
 
