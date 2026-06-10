@@ -171,6 +171,44 @@ in production environment. X. Fan et al. proposed an LLM-assisted Red Team
 framework for dynamic Cyber Kill Chain simulation which demonstrated
 a 99.2\% accuracy in vulnerability detection \citep{10.1145/3803633.3803641}.
 
+\paragraph*{Threat Modeling}
+The goal of threat modeling is to "create an abstraction of the system; profiles 
+of potential attackers, including their goals and methods; and a catalog of potential
+threats that may arise" \citep{threatmodeling}.
+\textit{Threat modeling} is integral to firstly understanding potential system
+threats and ultimately threat mitigation.
+ Recent years have seen attempts
+to automate threat modeling with Large Language Model across several
+disciplines, including hardware design \citep{11022932}, pre-trained AI models
+\citep{10764813}, LLM-Integrated software applications \citep{10.1145/3756681.3757083},
+and MCP \citep{11406667}.
+
+\paragraph*{Threat Validation} While \textit{threat detection \& analysis}
+help elicit software security threats, extra efforts is needed to verify
+their existence and possibility of exploitation, hence \textit{threat validation}.
+W. Mbaka and K. Tuma conducted an empirical study on the usefulness
+of LLM-assisted \textit{threat validation} and concluded that practitioners
+benefited from LLMs despite their not always providing conclusive results
+\citep{10.1007/s10664-026-10837-z}. Z. Jiang et al. proposed an innovative
+agentic framework while fully utilizing LLM's reasoning capability
+to identify vulnerability-revealing issue reports \citep{10.1145/3801149}.
+C. Ma et al. leveraged LLM to help structure Cyber Threat Intelligence (CTI)
+reports and to automatically analyze possible attack techniques
+\citep{MA2025104141}. By integrating LLM-enhancement techniques (Section~\ref{sec:rq1})
+and threat knowledge, LLMs have demonstrated potential of automating
+the formerly manual work of \textit{threat validation}.
+
+\paragraph*{Affected Library Detection}
+Given a set of reported vulnerabilities, \textit{affected library detection}
+aims to help practitioners determine whether their software is affected by
+the vulnerabilities in the dependent libraries and take actions if affected. 
+J. Xu et al. adopted
+parameter-efficient fine-tuning \citep{hu2022lora} and a customized
+hallucination elimination algorithm for classifying affected libraries from
+16238 NVD (National Vulnerability Database) reports \citep{10.1007/s10515-025-00540-6}.
+Also, VULLOC, a framework integrating knowledge augmentation 
+and fine-tuning \citep{11495563},  was proposed by  J. Xu et al.  for mapping
+NVD reports to localizing affected libraries and versions.
 
 \subsection{Mitigation of Build System Vulnerabilities}\label{subsec:vec2}
 
