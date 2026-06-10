@@ -4009,26 +4009,6 @@ series = {ISSTA 2024}
  year = {2026}
 }
 
-@article{10.1145/3747288,
- abstract = {Ethical and social risks persist as a crucial yet challenging topic in human-AI interactions, especially in ensuring the safe usage of natural language processing (NLP). The emergence of large language models (LLMs) like ChatGPT introduces the potential for exacerbating this concern. However, prior works on the ethics and risks of emergent LLMs either overlook the practical implications in real-world scenarios, lag behind rapid NLP advancements, lack user consensus on ethical risks, or fail to holistically address the entire spectrum of ethical considerations. In this article, we comprehensively evaluate, qualitatively explore, and catalog ethical dilemmas and risks in ChatGPT through benchmarking with eight representative datasets and red teaming involving diverse case studies. Our findings show that while ChatGPT demonstrates superior safety performance on benchmark datasets, its guardrails can be bypassed via our manually curated examples, revealing not only the limitations of current benchmarks for risk assessment but also unexplored risks in five distinct scenarios, including social bias in code generation, bias in cross-lingual question answering, toxic language in personalized dialogue, misleading information from hallucination, and prompt injections for unethical behaviors. We conclude with implications from red teaming ChatGPT and recommendations for designing future responsible large language models.},
- address = {New York, NY, USA},
- articleno = {116},
- author = {Zhuo, Terry Yue and Huang, Yujin and Chen, Chunyang and Du, Xiaoning and Xing, Zhenchang},
- doi = {10.1145/3747288},
- issn = {1049-331X},
- issue_date = {May 2026},
- journal = {ACM Trans. Softw. Eng. Methodol.},
- keywords = {AI Ethics, Red Teaming, Large Language Models},
- month = {April},
- number = {5},
- numpages = {21},
- publisher = {Association for Computing Machinery},
- title = {Bypassing Guardrails: Lessons Learned from Red Teaming ChatGPT},
- url = {https://doi.org/10.1145/3747288},
- volume = {35},
- year = {2026}
-}
-
 @inproceedings{10.1145/3756681.3756991,
  abstract = {Mutation testing is a widely recognized technique for assessing and enhancing the effectiveness of software test suites by introducing deliberate code mutations. However, its application often results in overly large test suites, as developers generate numerous tests to kill specific mutants, increasing computational overhead. This paper introduces PRIMG (Prioritization and Refinement Integrated Mutation-driven Generation), a novel framework for incremental and adaptive test case generation for Solidity smart contracts. PRIMG integrates two core components: a mutation prioritization module, which employs a machine learning model trained on mutant subsumption graphs to predict the usefulness of surviving mutants, and a test case generation module, which utilizes Large Language Models (LLMs) to generate and iteratively refine test cases to achieve syntactic and behavioral correctness.We evaluated PRIMG on real-world Solidity projects from Code4Arena to assess its effectiveness in improving mutation scores and generating high-quality test cases. The experimental results demonstrate that PRIMG significantly reduces test suite size while maintaining high mutation coverage. The prioritization module consistently outperformed random mutant selection, enabling the generation of high-impact tests with reduced computational effort. Furthermore, the refining process enhanced the correctness and utility of LLM-generated tests, addressing their inherent limitations in handling edge cases and complex program logic.},
  address = {New York, NY, USA},

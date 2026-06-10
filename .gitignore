@@ -1,4 +1,5 @@
 pdfs/
+.vscode/
 
 # browser extensions
 ext/
@@ -14,6 +15,7 @@ neurips_2025.*
 main.bib
 main.md
 main.docx
+main.d
 *.aux
 *.log
 *.out

@@ -8,7 +8,7 @@ introducing the major attack vectors of SSC breaches, and then review
 how LLMs are leveraged to mitigate these kinds of attacks. 
 
 % IMPORTANT NOTE: this is not my original work.
-\paragraph*{What are the attack vectors against SSC?} L. Williams et al.
+\subsubsection{What are the attack vectors against SSC?} L. Williams et al.
 categorized the three major attack vectors as follows\citep{sscdirection}:
 
 
@@ -47,7 +47,7 @@ this kind of SSC attack.
 
 \subsection{Mitigation of Malware and Vulnerabilities}\label{subsec:vec1}
 
-\paragraph*{Which components of Software Supply Chain are secured by LLM?}
+\subsubsection{Which components of Software Supply Chain are secured by LLM?}
 We made a qualitative analysis of components whose security is protected
 by LLM-based methodologies. We classify components of Software Supply Chain
 by the type of hosted artifacts, as follows:
@@ -75,7 +75,7 @@ We found that while \textit{Package Manager} and \textit{Code-hosting Platform}
 pertain the majority of "LLM for SSC Security" studies, recent years
 have seen a burst of research interest in the supply chain security of Artificial
 Intelligence models and harness. The 4 kinds of components distribute
-almost evenly in terms of the number of publications.
+roughly evenly in terms of the number of publications.
 
 % Generated from dataset/domain.json
 % "package manager" : e.g. npm, maven, PyPI, etc.
@@ -93,16 +93,84 @@ almost evenly in terms of the number of publications.
   \label{fig:rq2dom}
 \end{figure}
 
+\subsubsection{What kinds of mitigation techniques are proposed?}
+As shown in Figure~\ref{fig:vec1taxo},
+we crafted a comprehensive taxonomy of attack vector 1 mitigation
+techniques.
+
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{logo/vec1taxo.pdf}
 
   \caption{Taxonomy of Attack Vector 1 Mitigation Techniques. \\
-   {\small \textit{det.} is short for the word detection; \textit{lib.} is short for the word library.} \\
-   {\small Enclosure of circles implies logical enclosure; the size of circle
+   {\small \textit{det.} is short for the word "detection"; \textit{lib.} is short for the word "library".} \\
+   {\small Enclosure of circles implies logical and conceptual enclosure; the size of circle
    is roughly proportional to \# studies obtained.}
   }
+\label{fig:vec1taxo}
 \end{figure}
+
+\paragraph*{Threat Detection \& Analysis}
+The goal of threat detection and analysis is to identify potential 
+vulnerabilities (e.g. \cite{10.1007/s10664-026-10832-4,10.1016/j.jss.2024.112234,10.1109/ICSE48619.2023.00089})
+and  malicious behaviors in software package (e.g. \cite{10.1145/3577923.3583657,10.1145/3705304,11029752}) 
+before they can be triggered by the attacker (i.e. vulnerabilities and malicious behaviors
+are the major source of SSC threats).
+The detection of either vulnerabilities or malicious behaviors can be
+modeled as a binary classification problem -- classifying a code snippet
+as benign or vulnerable/malicious.
+
+\par Vulnerabilities are seemingly benign defects in the source code which usually does not have
+tangible consequences but can lead to system failures or theft of sensitive information.
+The use of LLM in vulnerability detection is largely motivated by their capabilities of understanding
+code semantics and contextual reasoning. With some LLM-enhancement techniques (Section~\ref{sec:rq1}),
+these language models have shown promising results in  vulnerability detection.
+For instance, H. Shu et al. leveraged a combination of  few-shot prompting 
+and fine-tuning to improve the performance of LLM
+in multi-lingual vulnerability detection \citep{10.1007/s10664-026-10832-4}; 
+Y. Yang employed fine-tuning and chain-of-thought prompting for exceptional
+detection outcome \citep{10.1016/j.jss.2024.112234}.
+
+\par LLMs have demonstrated similar potential for detecting the malicious behaviors
+in software packages. Software backdoors tend to undermine authorization mechanisms,
+whereas ransomwares render the system unusable. Most malware detection studies
+(including \cite{10.1145/3705304, 10695665, 11029752})
+follow a "LLM as a static analyzer" fashion to overcome the low generalizability
+of static analysis tools, where LLM search the code repository
+for clues, given a set of pre-defined knowledge and patterns of malicious behaviors.
+On the contrary, T. Ganz et al. developed a novel method where an LLM is
+employed to vet the commit history reflecting development process for clues
+of malicious code injection\citep{10.1145/3577923.3583657}.
+
+\paragraph*{Security Testing}
+While the primary purpose of software testing is to ensure functional correctness,
+testing techniques can also uncover previously unknown vulnerabilities.
+Large Language Models have been adopted to enhance \textit{mutation testing} 
+\citep{10.1145/3756681.3756991}, a technique to assess and enhance the
+effectiveness of test suite. Also in \textit{fuzz testing} whose goal
+is to trigger software crash by generating or mutating test inputs,
+LLM have been employed to directly generate a set of diverse test inputs
+\citep{fuzz4all}. 
+
+\paragraph*{Reverse Engineering}
+Some software packages undergo a series obfuscations before they are released
+by a \textit{package manager}, in order to conceal the source code from which
+they are compiled. These obfuscations posit extra complexities for
+\textit{threat detection \& analysis}. Such challenge can be resolved
+by \textit{binary code analysis} -- directly reasoning the binary byte code
+for software vulnerability of malicious behaviors \citep{11519107}, 
+or \textit{reverse engineering},
+which tries to reconstruct the source code from the compiled byte code
+\citep{YU2026104923}. For instance, S. Meng et al. incorporates Large Language Model
+and knowledge graph for hallucination-free function-granularity malicious
+code detection \citep{11519107}.
+
+\paragraph*{Red Teaming} By mocking the intrusion behavior of the attacker,
+\textit{Red Teaming} is a technique for unveiling the software vulnerabilities
+in production environment. X. Fan et al. proposed an LLM-assisted Red Team
+framework for dynamic Cyber Kill Chain simulation which demonstrated
+a 99.2\% accuracy in vulnerability detection \citep{10.1145/3803633.3803641}.
+
 
 \subsection{Mitigation of Build System Vulnerabilities}\label{subsec:vec2}
 
