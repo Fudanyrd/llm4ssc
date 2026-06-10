@@ -297,4 +297,41 @@ built a tool to detect the presence of logical discrepancies between
 the source code and built artifact, a step towards transparency and
 trustworthiness of software packaging process \citep{10.1145/3605770.3625213}.
 
+\subsection{RQ2 -- Conclusion}\label{subsec:rq2end}
+
+This section delves into the attack vectors of Software Supply Chain attacks
+and mitigation techniques for attack vector 1 and 2 (in section~\ref{subsec:vec1}
+and section~\ref{subsec:vec2}, respectively).
+For attack vector 1, we contributed a comprehensive taxonomy of mitigation
+techniques, as shown in Figure~\ref{fig:vec1taxo}. Moreover,
+we briefly categorized potential threats to build system and infrastructure,
+in Figure~\ref{fig:vec2ov}. We conclude that with domain-specific
+knowledge engineering and LLM-enhancement techniques discuss in RQ1,
+LLMs are promising in securing Software Supply Chain.
+
+\paragraph*{Research Gaps and Directions}
+
+\begin{itemize}
+  \item We have observed a scarcity of attack vector 2 and 3 mitigation
+  methods, as shown in Figure~\ref{fig:rq2dist}. This calls for future research
+  into Social Engineering detection, LLM-assisted analysis of workflows,
+  etc.
+
+  \item There are also concerns of LLM's generalizability,
+  consistency, and reproducibility when applied to SSC security.
+  Due to their probabilistic nature, the intrinsic hallucination
+  of LLMs can lead to failed threat detection, erroneous threat analysis,
+  and most importantly, inconsistent results.
+  Furthermore, we observed a tendency to fine-tune the LLM before
+  application to down-stream tasks. We argue that the generalizability
+  (to unseen input) of fine-tuned LLM in SSC security must be experimented before they
+  are put into production.
+
+  \item Recent advancements in agentic framework bring promise to
+  automated defense of SSC security. Compared to fine-tuning, 
+  incorporating LLM-based agents and domain knowledge can eliminate
+  the need to collect dataset (required for tuning) and the need of
+  computation power.
+\end{itemize}
+
 
