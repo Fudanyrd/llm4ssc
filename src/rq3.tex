@@ -95,4 +95,47 @@ Machine Learning Systems (MLSys), or an LLM-integrated applications.
 Breaching these infrastructures is likely to evade the prediction
 of an LLM. 
 
+\subsection{Implications of Agent Stage Vulnerabilities}
+\label{subsec:impagent}
+
+\par Equipped with agent harness (including tools, memory, etc.),
+an LLM is turned into an \textit{agent} capable of autonomously 
+completing tasks. This section discuss the implications of
+vulnerabilities in the agent harness. It is worth noting that 
+\textit{social engineering attack}
+and \textit{penetration testing} are remotely associated with Software
+Supply Chain, but we kept them in this section because they are
+part of our search results (Section~\ref{subsec:search}). 
+
+\paragraph*{Malicious Skill or Plugin} 
+The skill or plugin (discussed in section~\ref{sec:rq1}) of a coding agent
+may contain covert prompts guiding the LLM to inject vulnerable
+or malicious code. Though no skill-guided SSC attack has been published,
+the presence of malicious skill has more severe consequences, including
+credential theft, data loss and system control \citep{skillvulns}.
+
+\paragraph*{Compromising MCP \& Agent Framework}
+MCP server is the bridge between an agent and its data source (details
+are in Section~\ref{sec:rq1}). The risks of MCP servers include remote
+code execution, tool poisoning, and \textit{prompt injection}
+\citep{10.1145/3814959,mcpvulns}. Attackers may employ a simple
+\textit{prompt injection} to embed a vulnerability or backdoor
+in the code agent's workspace, thereby compromising a software package.
+Likewise, the vulnerability in a \textit{agent framework} 
+has similar implications.
+
+\paragraph*{Penetration Testing}
+LLM-based agents may be employed to perform automated penetration testing
+and discover previously unknown vulnerabilities
+ \citep{10970188,11418046,10.1145/3766895}. This may enable the attacker
+to gain an upper hand, especially when the vulnerability is not
+disclosed.
+
+\paragraph*{Social Engineering Attack}
+LLMs can be leveraged to produce realistic contents for successful
+social engineering attacks. For instance, M. Chowdhury 
+et al. examined the use of ChatGPT in developing trojans,
+rootkits, and phishing tools \citep{10187385}.
+These attacks  can lead to malware distribution or credential theft.
+
 
