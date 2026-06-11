@@ -20,6 +20,7 @@ Software Supply Chain security.
 \end{figure}
 
 \subsection{Implications of Training Stage Vulnerabilities}
+\label{subsec:imptrain}
 In its training and fine-tuning process, Large Language Models
 are susceptible to \textit{data poisoning} and \textit{backdoor injection}
 attacks. Speaking of Code Language Models (CLMs), its training data
@@ -48,5 +49,50 @@ applications (including deliberate malicious code injection)
 \textit{backdoor attack} can also inject malicious package into
 Software Supply Chain.
 
+
+\subsection{Implications of Inference Stage Vulnerabilities}
+\label{subsec:impinfer}
+
+\paragraph*{Jail Breaking} This kind of attack is employed to bypass the ethical
+alignment\citep{carlini23aligned} and security restrictions of an LLM, so that malignant 
+can be generated \citep{10.1145/3716628}. In the scenario of Software Supply Chain, attackers
+can adopt this attack for malicious code generation and
+vulnerability injection \citep{10.1007/s10515-026-00628-7}.
+
+\paragraph*{Adversarial Attack}  After a CLM is published,
+ adversarial samples  can be generated to perturb its prediction
+process and yield unexpected output. It is assumed that 
+adversarial attacks on code models can introduce vulnerabilities and
+backdoors in the software under development \citep{10.1007/s10515-024-00464-7},
+but this attack surface is yet to be explored by future research.
+
+\paragraph*{(Unintended) Vulnerable Code Generation}
+Code models have been extensively used in programming tasks.
+Meanwhile, their intrinsic hallucinations have given rise to vulnerabilities
+in generated code. For instance, experiments conducted by H. Pearce et al. 
+showed that around 40\% of 1689 \textit{GitHub Copilot} \citep{copilot}
+generated programs are vulnerable (i.e. 
+CWEs are detected by static analyzer) \citep{copilotsecurity}.
+S. Ullah et al. made an extensive evaluation of several LLMs' ability
+to detect security vulnerabilities in source code and found a limited
+capability in reasoning about  vulnerability \citep{ullah2024llms}.
+These results suggest that LLM-generated code should be vetted
+for potential vulnerabilities before deployment.
+
+\paragraph*{Guided Malware Generation}
+Equipped with \textit{adversarial attack} and \textit{jailbreak attach}
+methods, attackers can leverage LLM to generate and inject malicious
+code into components of Software Supply Chain. For instance,
+E. Iturbe et al. explored LLM's capabilities in crafting attack scripts
+, resulting in a success rate of 16\% \citep{ITURBE2024104077}. 
+M. Fard et al. leveraged an LLM to inject software backdoor,
+which can bypass the audit of developers with high efficacy \citep{llmbackdoordet}.
+
+
+\paragraph*{MLSys Breach}
+Most LLM are deployed on a 
+Machine Learning Systems (MLSys), or an LLM-integrated applications.
+Breaching these infrastructures is likely to evade the prediction
+of an LLM. 
 
 
