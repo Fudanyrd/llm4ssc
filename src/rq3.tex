@@ -1,0 +1,52 @@
+\section{RQ3 -- Potential SSC Risks Imposed by LLM}
+\label{sec:rq3}
+
+\par As shown in Figure~\ref{fig:llmrisk},
+ we summarized possible vulnerabilities  of an LLM, which
+ may posit attack surfaces to the Software Supply Chain,
+ across its lifecycle --
+\textit{training \& tuning} stage, \textit{inference} stage,
+and \textit{agent} stage.  This section then
+delves into how these vulnerabilities turn against
+Software Supply Chain security.
+
+\begin{figure}
+  \input{logo/llmrisk.tex}
+  \caption{The vulnerabilities of an LLM in \textit{Training}, \textit{Inference},
+  and \textit{Agent} stage. \\
+   {\small Each citation in this figure represents an attack made by a previous research.}
+  }
+  \label{fig:llmrisk}
+\end{figure}
+
+\subsection{Implications of Training Stage Vulnerabilities}
+In its training and fine-tuning process, Large Language Models
+are susceptible to \textit{data poisoning} and \textit{backdoor injection}
+attacks. Speaking of Code Language Models (CLMs), its training data
+may be contaminated by malicious or vulnerable code snippets.
+Consequently, in their inference stage, the generated code contains
+similar patterns of vulnerability or malice; certain LLM-based
+bug detector may suffer reduced effectiveness. As an increasing proportion
+of code is written by CLMs, \textit{data poisoning} is capable of
+polluting Software Supply Chain with problematic software packages.
+For instance, M. Jahanshahi et al. made a large scale investigation
+into the use of Open Source Software in LLM training, and observed
+a drop in vulnerability rate when the LLM is trained with "cleaner"
+code (e.g. whose CVEs are resolved) \citep{11028470}. Such observations
+calls for data poisoning mitigation techniques (e.g. \citep{11344010}) to 
+sanitize the defects in the training data.
+
+% SSC attack vector 1.
+\par Researchers have noticed the existence of \textit{backdoor}s in
+these CLMs, which enabled the attacker to manipulate a model's response
+with a trigger in the prompt to obtain malicious code from the model's
+output \citep{li2021backdoorattackspretrainedmodels}. 
+Y. Qu et al. conducted a review of LLM backdoor attacks, 
+fine-tuning based  methods, and
+applications (including deliberate malicious code injection)
+\citep{10.1016/j.infsof.2025.107707}. Like \textit{data poisoning},
+\textit{backdoor attack} can also inject malicious package into
+Software Supply Chain.
+
+
+
