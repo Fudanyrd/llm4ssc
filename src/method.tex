@@ -78,6 +78,22 @@ in order to establish a set of relevant studies:
     \end{tabular}
   };
 
+  \node[res] (defense) [below=of result, xshift=-2cm] {
+    \begin{tabular}{l}
+      \textbf{LLM for Defense} \\
+      {\small (Section~\ref{sec:rq2})} \\
+      58 Studies \\
+    \end{tabular}
+  };
+
+  \node[res] (attack) [right=of defense] {
+    \begin{tabular}{l}
+      \textbf{LLM for Attack} \\
+      {\small (Section~\ref{sec:rq3})} \\
+      23 Studies \\
+    \end{tabular}
+  };
+
   \draw [thick, ->] (sstr.east) -- (sdb.west);
   \draw [thick, ->] (sdb.east) -- (sfilt.west);
   \draw [thick, ->] (sfilt.south) |- node[xshift=-0.5cm] {
@@ -86,6 +102,8 @@ in order to establish a set of relevant studies:
     Search (+3 studies) \\
     \end{tabular}
   } (result.east);
+  \draw[thick, ->] (result.south) -- (defense.north);
+  \draw[thick, ->] (result.south) -- (attack.north);
 \end{tikzpicture}
 
 \caption{The process of study identification and selection.}
@@ -139,7 +157,7 @@ published in workshop track, because their reference lists
 may benefit our snowballing search.
 In this step, we conducted a manual selection by examining the 
 title, abstract, and keywords of each article, resulting
-in a total of ?? papers.
+in a total of 81 papers.
 
 \begin{table}[ht]
   \centering
