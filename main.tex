@@ -11,6 +11,8 @@
 \usepackage{microtype}      % microtypography
 \usepackage{xcolor}         % colors
 \usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric}
 \usetikzlibrary{decorations.pathreplacing,calligraphy}
@@ -42,16 +44,8 @@
 
 \begin{document}
 \maketitle
-
-
 \begin{abstract}
-  The abstract paragraph should be indented \nicefrac{1}{2}~inch (3~picas) on
-  both the left- and right-hand margins. Use 10~point type, with a vertical
-  spacing (leading) of 11~points.  The word \textbf{Abstract} must be centered,
-  bold, and in point size 12. Two line spaces precede the abstract. The abstract
-  must be limited to one paragraph.
-
-  \paragraph*{Keywords:} Software Supply Chain, Large Language Model, AI Governance
+  \input{src/abs.tex}
 \end{abstract}
 
 
@@ -60,6 +54,11 @@
 
 % Body: research questions.
 \input{src/rq1.tex}
+\input{src/rq2.tex}
+\input{src/rq3.tex}
+
+% Closing this study.
+\input{src/conclude.tex}
 
 {
 \small
