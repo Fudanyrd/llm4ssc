@@ -121,7 +121,8 @@ code execution, tool poisoning, and \textit{prompt injection}
 \citep{10.1145/3814959,mcpvulns}. Attackers may employ a simple
 \textit{prompt injection} to embed a vulnerability or backdoor
 in the code agent's workspace, thereby compromising a software package.
-Likewise, the vulnerability in a \textit{agent framework} 
+Likewise, the vulnerability in a \textit{agent framework}
+\footnote{A software that manages the harness of an LLM-based agent, e.g. \texttt{langchain}.}
 has similar implications.
 
 \paragraph*{Penetration Testing}
@@ -138,4 +139,42 @@ et al. examined the use of ChatGPT in developing trojans,
 rootkits, and phishing tools \citep{10187385}.
 These attacks  can lead to malware distribution or credential theft.
 
+\subsection{RQ3 -- Summary}\label{subsec:rq3end}
+\par As shown in Figure~\ref{fig:llmrisk}, we made a comprehensive study
+of leveraging LLM's intrinsic vulnerabilities for attacking on Software Supply
+Chain. Section~\ref{subsec:imptrain}, \ref{subsec:impinfer}, and \ref{subsec:impagent}
+discussed potential SSC attack techniques during different stages of LLM's lifetime.
+Apart from these, LLM may be employed by attackers for \textit{reverse engineering},
+\textit{penetration testing}, \textit{forging bug report}, 
+and \textit{malicious code obfuscation},
+threatening the safety of SSC.
+
+\paragraph*{Exploitation of SSC Attack Vectors 
+\footnote{Attack vectors are discussed in Section~\ref{sssec:avectors}.}} 
+Because of LLM's tendency to
+generate vulnerable code \citep{copilotsecurity} and susceptibility
+to a variety of attacks (such as backdoor, adversarial sample, etc.), 
+the exploitation of attack vector 1  
+will probably become predominant -- by unintentionally or deliberately
+generate malicious or vulnerable code and publish it on the web.
+We have also seen exploitation of attack vector 3 -- through \textit{jailbreaking} the
+LLM and prompt it to aid \textit{social engineering} \citep{10187385}.
+Nevertheless, exploitation of attack vector 2 (the build system) is
+currently rare.
+
+\paragraph*{Future Research Directions} 
+\begin{itemize}
+  \item The exploitation of attack vector 2 (targeting the build system)
+  is still lacking, which calls for future research. Possible methods
+  include malicious script injection into \textit{workflow} file,
+  automated malicious code injection during the build process,
+  recognition of hard-coded tokens or credentials.
+
+  \item Because of tremendous interest in LLM-based vulnerability
+  detection, malware detection, and security testing methods (discussed 
+in Section~\ref{subsec:vec1}), it is still unclear whether
+existing attach techniques can bypass these checks.
+ Future work is needed to evaluate the effectiveness of attack vector 1
+ in the presence of state-of-the-art threat detectors.
+\end{itemize}
 
