@@ -1,0 +1,44 @@
+\section{Conclusions}\label{sec:conclude}
+
+\par Software Supply Chain is a crucial infrastructure of
+our digitalized world. It is nevertheless susceptible to 
+vulnerable/malicious code, compromised build infrastructures,
+and targeted human developers. To this end, a wide variety of
+LLM-based defense techniques have been proposed, where LLMs
+are leveraged because of their capabilities of contextual
+reasoning and code comprehension.
+However, the sheer number of SSC attacks in recent years
+calls for more effective defense methods.
+
+\par This study also delves into LLM's employment for attacking
+purposes. Through a rigorous analysis of collected 23 "LLM for SSC attack"
+studies presented in RQ3 (Section~\ref{sec:rq3}), we conclude that
+LLMs are capable of assisting attackers in breaching SSC
+via vulnerable code injection or social engineering attack.
+
+\paragraph*{Calls for ethical use of LLMs in software development}
+Based on our literature review and analysis, we suggest the following
+mitigation and counter-measures:
+
+\begin{itemize}
+  \item \textit{Software Developers} (Users Code Language Models) 
+  should be aware of the LLM's
+  tendency in providing seemingly correct code with subtle
+  bugs, vulnerabilities, or even malicious code. Therefore,
+  rigorous code-review and state-of-the-art linter are recommended.
+  Nevertheless, the use of LLM in reporting software vulnerabilities
+  have to be followed by thorough investigation of veteran developers
+  in case of incorrect content.
+
+ \item \textit{LLM providers} should be cautions of data poisoning
+ attacks and low-quality training data, so that the safety of LLM-generated
+  code can be improved. Furthermore, ethical alignment of LLMs
+  should be implemented to counter jailbreaking or prompt injection
+  attacks. 
+
+  \item \textit{Package Managers} and \textit{Code Hosting Platforms}
+  should enhance scrutiny of published software packages, possibly
+  employing state-of-the-art threat detectors in case of potential
+  attacks.
+\end{itemize}
+

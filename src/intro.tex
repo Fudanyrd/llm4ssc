@@ -43,41 +43,35 @@ software engineering tasks, such as code suggestion, code completion, and
 code review \citep{llm4se, llm4se2}. Because of their contextual reasoning
 capabilities and understanding of code intent, several studies have
 explored leveraging these language models for guarding the security
-of Software Supply Chain, in the following ways:
+of Software Supply Chain. For instance, by means of 
+\textit{threat detection} (e.g. \citep{llmbackdoordet,singla2023empiricalstudyusinglarge,syed2025agenticaiautonomousdefense}),
+malicious code such as backdoors in software packages can be 
+reported; through enhanced \textit{security testing} and \textit{vulnerability detection}
+(e.g. \citep{11022932,10695665,10628694}), vulnerabilities 
+can be uncovered before exploitation; via automated \textit{vulnerability repair}
+(e.g. \citep{vulrepairusingllm,vulmaster}), attackers have less time and chance
+to exploit a reported vulnerability. LLM for Software Supply Chain
+defense techniques will be discussed in Section~\ref{sec:rq2}.
 
-\begin{itemize}
-  \item \textit{Attack Detection} (e.g. 
-  \citep{llmbackdoordet,singla2023empiricalstudyusinglarge,syed2025agenticaiautonomousdefense}).
-  By studying source code patterns of ransomware and backdoor,
-  Large Language Models can be leveraged as classifiers to
-  help package distribution sites eliminate malicious software components.
-
-  \item \textit{Vulnerability Detection} (e.g. \citep{11022932,10695665,10628694}).
-  By analyzing threat models and
-  searching for Common Weakness Enumerations (CWEs) in the source code, 
-  vulnerabilities can be fixed before they persist to a released package.
-
-  \item \textit{Vulnerability Repair} (e.g.
-  \citep{vulrepairusingllm,vulmaster}). Large Language Models can be
-  leveraged for automated vulnerability resolution, thereby accelerating
-  the process of patching a known vulnerability before exploitation.
-\end{itemize}
-
-\par Nevertheless, Large Language Models may be used for both defending the
-security of Software Supply Chain, and also attacking it. This study reviews and
-hypothesizes several scenarios where LLM can assist attacking Software
-Supply Chain, and provides their respective attack vector.
+\par Nevertheless, Large Language Models may be used equally for the good
+and the evil. LLMs are susceptible to both intrinsic hallucinations and
+a wide variety of attacks. Section~\ref{sec:rq3} discusses LLM's potential
+of generating code with vague vulnerabilities or malice, as a result
+of either internal hallucinations or deliberate attack on its
+training data and prediction process. Furthermore, LLM's capability of
+generating readable text has been leveraged for social engineering attack,
+such as crafting phishing emails.
 
 \par To the best of our knowledge, this study is the first to examine the
 Large Language Model's implications of the security of Software Supply Chain.
 It makes the following contributions:
 
 \begin{itemize}
-  \item A Systematic Literature Review on "LLM for Software Supply Chain",
-  which identifies research advancements and gaps.
+  \item A systematic literature review of LLM-based
+  Software Supply Chain defense techniques (Section~\ref{sec:rq2}).
 
-  \item A literature review of studies in which LLM is leveraged for attacking
-  purposes. We also hypothesize other possible scenarios.
+  \item A rigorous analysis of LLM's vulnerabilities and possible
+  exploitations of LLM in Software Supply Chain attacks, in Section~\ref{sec:rq3}.
 
   \item Insights into mitigation of LLM-assisted Software Supply Chain
   attacks. They serve as guidance to responsible, ethical, and non-malignant
