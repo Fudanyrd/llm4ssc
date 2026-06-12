@@ -1,4 +1,4 @@
-\documentclass[acmlarge,screen=false]{acmart}
+\documentclass[acmlarge,screen=false,language=chinese,language=english]{acmart}
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -18,6 +18,9 @@
 \usetikzlibrary{arrows.meta}
 
 \usepackage{gbt7714}
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}
+\newCJKfontfamily[hei]\myhei{SimHei}
 \bibliographystyle{gbt7714-numerical}
 
 \bibpunct{[}{]}{,}{n}{}{;}
@@ -25,6 +28,22 @@
 \newcommand{\thickhline}{\hline}
 
 \title{LLMs for Software Supply Chain Security: Boon or Bane?}
+\translatedtitle{chinese}{\myhei 大语言模型之于软件供应链安全: 利与弊}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10002978.10003022.10003023</concept_id>
+       <concept_desc>Security and privacy~Software security engineering</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Security and privacy~Software security engineering}
+
+\keywords{Large Language Model, Software Supply Chain, AI Governance}
+\translatedkeywords{chinese}{大语言模型, 软件供应链, 人工智能治理}
 
 \author{Rundong Yang}
 \orcid{0009-0003-6567-7741}
@@ -35,7 +54,7 @@
 \city{Shanghai}
 \country{China}
 }
-\settopmatter{printacmref=false, printccs=false, printfolios=false}
+\settopmatter{printacmref=false, printccs=true, printfolios=false}
 \setcopyright{none}
 \setcctype{zero}
 \acmArticleType{Review}
@@ -55,6 +74,7 @@
   %\par {~}
   \input{src/abs.tex}
 \end{abstract}
+
 \maketitle
 \input{src/intro.tex}
 \input{src/method.tex}

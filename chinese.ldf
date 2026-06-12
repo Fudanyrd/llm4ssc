@@ -1,0 +1,69 @@
+\ifx\epTeXinputencoding\undefined\else
+  \epTeXinputencoding utf8
+\fi
+\ProvidesLanguage{chinese}
+[2016/04/23 v0.0 chinese support from the babel system]
+
+\LdfInit\CurrentOption{captions\CurrentOption}
+\ifx\l@chinese\@undefined
+    \PackageInfo{babel}{%
+        No hyphenation patterns are available for Chinese,\MessageBreak
+        so I will use the patterns preloaded for \bbl@nulllanguage\MessageBreak
+        instead}
+    \adddialect\l@chinese0\fi
+\def\bbl@chinese@prefacename{前言}%
+\def\bbl@chinese@refname{参考文献}%
+\def\bbl@chinese@abstractname{摘要}%
+\def\bbl@chinese@bibname{参考文献}%
+\def\bbl@chinese@appendixname{附录}%
+\def\bbl@chinese@prechaptername{第}%    -- added
+\def\bbl@chinese@postchaptername{章}%   -- added
+\def\bbl@chinese@presectionname{第}%  第  -- added
+\def\bbl@chinese@postsectionname{节}% 節  -- added
+\def\bbl@chinese@appendixname{附录}%
+\def\bbl@chinese@contentsname{目录}%
+\def\bbl@chinese@listfigurename{插图目录}%
+\def\bbl@chinese@listtablename{表格目录}%
+\def\bbl@chinese@indexname{索引}%
+\def\bbl@chinese@figurename{图}%
+\def\bbl@chinese@tablename{表}%
+\def\bbl@chinese@prepartname{第}%       -- added
+\def\bbl@chinese@postpartname{部分}%      -- added
+\def\bbl@chinese@proofname{证明}%
+\def\bbl@chinese@glossaryname{术语表}%
+\def\bbl@chinese@keywordsname{关键词}%
+
+\@namedef{captions\CurrentOption}{%
+  \let\prefacename\bbl@chinese@prefacename
+  \let\refname\bbl@chinese@refname
+  \let\abstractname\bbl@chinese@abstractname
+  \let\bibname\bbl@chinese@bibname
+  %\def\chaptername{Chapter}%
+  \let\prechaptername\bbl@chinese@prechaptername   % -- added
+  \let\postchaptername\bbl@chinese@postchaptername % -- added
+  \let\presectionname\bbl@chinese@presectionname   % -- added
+  \let\postsectionname\bbl@chinese@postsectionname % -- added
+  \let\appendixname\bbl@chinese@appendixname
+  \let\contentsname\bbl@chinese@contentsname
+  \let\listfigurename\bbl@chinese@listfigurename
+  \let\listtablename\bbl@chinese@listtablename
+  \let\indexname\bbl@chinese@indexname
+  \let\figurename\bbl@chinese@figurename
+  \let\tablename\bbl@chinese@tablename
+  %\def\partname{Part}%
+  \let\prepartname\bbl@chinese@prepartname   % -- added
+  \let\postpartname\bbl@chinese@postpartname % -- added
+%   \def\seename{参照}
+  \let\proofname\bbl@chinese@proofname
+  \let\glossaryname\bbl@chinese@glossaryname
+}
+
+
+\@namedef{date\CurrentOption}{%
+    \def\today{\number\year 年 \number\month 月 \number\day 日}%
+}
+
+\@namedef{extras\CurrentOption}{}
+\@namedef{noextras\CurrentOption}{}
+\ldf@finish\CurrentOption
+\endinput
