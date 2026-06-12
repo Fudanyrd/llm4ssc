@@ -1,0 +1,71 @@
+\documentclass[acmlarge,screen=false]{acmart}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{decorations.pathreplacing,calligraphy}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
+\usepackage{gbt7714}
+\bibliographystyle{gbt7714-numerical}
+
+\bibpunct{[}{]}{,}{n}{}{;}
+\setcitestyle{numbers, square}
+\newcommand{\thickhline}{\hline}
+
+\title{LLMs for Software Supply Chain Security: Boon or Bane?}
+
+\author{Rundong Yang}
+\orcid{0009-0003-6567-7741}
+\email{22307140045@m.fudan.edu.cn}
+\affiliation{
+\institution{Fudan University}
+\department{College of Computer Science and Artificial Intelligence}
+\city{Shanghai}
+\country{China}
+}
+\settopmatter{printacmref=false, printccs=false, printfolios=false}
+\setcopyright{none}
+\setcctype{zero}
+\acmArticleType{Review}
+\acmDataLink{https://github.com/Fudanyrd/llm4ssc}
+
+% FORGED
+\acmDOI{10.1145/5555555-aaaaaaa}
+\acmISBN{aaaa-5555}
+\acmVolume{9}
+\acmNumber{4}
+\acmArticle{25}
+\acmYear{2026}
+\acmJournal{CSUR}
+
+\begin{document}
+\begin{abstract}
+  %\par {~}
+  \input{src/abs.tex}
+\end{abstract}
+\maketitle
+\input{src/intro.tex}
+\input{src/method.tex}
+
+% Body: research questions.
+\input{src/rq1.tex}
+\input{src/rq2.tex}
+\input{src/rq3.tex}
+
+% Closing this study.
+\input{src/conclude.tex}
+\bibliography{main}
+\end{document}
+
