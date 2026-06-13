@@ -10,7 +10,7 @@ kinds of tasks involve code comprehension and code summary.
 \par This RQ is conducted by a case-study of \texttt{opencode},
 followed by a
 brief literature review of collected LLM-enhancement techniques.
-\texttt{opencode} is "an open source AI coding agent" capable of
+\texttt{opencode} is "an open-source AI coding agent" capable of
 a series of software engineering tasks, such as code completion,
 code review, and code summary \citep{opencode}. The case-study
 of \texttt{opencode}'s internal implementation helps us identify 
@@ -29,8 +29,8 @@ for multiple rounds and observe LLM's performance), few
 shot learning \citep{fewshot1, fewshotlearner} (provide
 a few examples of expected answer)
 and/or chain-of-thought \citep{cotprompt}
-prompting (CoT, explicitly ask the LLM to show its reasoning process
-), as well as their variants.
+prompting (CoT, explicitly ask the LLM to show its reasoning process),
+as well as their variants.
 In practice, these prompts are loaded on-demand by the user,
 via a group of text files known as \textit{Plugins} 
 (\texttt{opencode} terminology) and \textit{Skills}
@@ -53,7 +53,7 @@ from the tedious task of turning the idea or requirement into
 executable source code.
 
 \par From the documentation of \texttt{opencode}\citep{opencode},
-we are able to build a mental model of the architecture of LLM-based
+we can build a mental model of the architecture of LLM-based
 agents, as shown in Figure~\ref{fig:agentarch}.
 
 \begin{figure}[ht]

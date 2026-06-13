@@ -14,7 +14,7 @@ Software Supply Chain security.
   \input{logo/llmrisk.tex}
   \caption{The vulnerabilities of an LLM in \textit{Training}, \textit{Inference},
   and \textit{Agent} stage. \\
-   {\small Each citation in this figure represents an attack made by a previous research.}
+   {\small Each citation in this figure represents an attack made by previous research.}
   }
   \label{fig:llmrisk}
 \end{figure}
@@ -30,11 +30,11 @@ similar patterns of vulnerability or malice; certain LLM-based
 bug detector may suffer reduced effectiveness. As an increasing proportion
 of code is written by CLMs, \textit{data poisoning} is capable of
 polluting Software Supply Chain with problematic software packages.
-For instance, M. Jahanshahi et al. made a large scale investigation
-into the use of Open Source Software in LLM training, and observed
+For instance, M. Jahanshahi et al. made a large-scale investigation
+into the use of Open-Source Software (OSS) in LLM training, and observed
 a drop in vulnerability rate when the LLM is trained with cleaner
 code (e.g. whose CVEs are resolved) \citep{11028470}. Such observations
-calls for data poisoning mitigation techniques (e.g. \citep{11344010}) to 
+call for data poisoning mitigation techniques (e.g. \citep{11344010}) to
 sanitize the defects in the training data.
 
 % SSC attack vector 1.
@@ -83,8 +83,8 @@ for potential vulnerabilities before deployment.
 Equipped with \textit{adversarial attack} and \textit{jailbreak attach}
 methods, attackers can leverage LLM to generate and inject malicious
 code into components of Software Supply Chain. For instance,
-E. Iturbe et al. explored LLM's capabilities in crafting attack scripts
-, resulting in a success rate of 16\% \citep{ITURBE2024104077}. 
+E. Iturbe et al. explored LLM's capabilities in crafting attack scripts,
+resulting in a success rate of 16\% \citep{ITURBE2024104077}.
 M. Fard et al. leveraged an LLM to inject software backdoor,
 which can bypass the audit of developers with high efficacy \citep{llmbackdoordet}.
 
