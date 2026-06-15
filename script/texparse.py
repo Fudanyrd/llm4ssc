@@ -254,13 +254,37 @@ class Parser():
         self.pending_tokens = []
         self.tokenizer = tokenizer
     
+    @staticmethod
+    def _is_comment(tok: str):
+        return tok and tok.startswith('%')
+
     def _next(self):
         if self.pending_tokens:
             # unused by previous looking-ahead.
             ret = self.pending_tokens[0]
             del self.pending_tokens[0]
             return ret
-        return self.tokenizer.next()
+        tok = self.tokenizer.next()
+        if not self._is_comment(tok):
+            return tok
+        
+        # concatenate adjacent comment tokens into one, for better formatting later.
+        comment_str = tok.replace('\n', ' ')
+        while True:
+            tok = self.tokenizer.next()
+            if tok is None:
+                break
+            elif self._is_comment(tok):
+                comment_str += tok[1:].replace('\n', ' ') # skip the leading '%'
+            elif tok == '\n':
+                comment_str += ' '
+            elif tok == ' ':
+                comment_str += ' '
+            else:
+                self.pending_tokens.append(tok)
+                break
+        return comment_str + '\n'
+
 
     def match_brace(self, node: NodeBase, cur: str):
         while True:
@@ -441,7 +465,7 @@ def struct_sections(docnode: EnvironNode):
 
 
 class Formatter():
-    __slots__ = ['buf', 'indent_size', 'linebreak', 'line_length', 'col', 'nest_level', 'autobreak']
+    __slots__ = ['buf', 'indent_size', 'linebreak', 'line_length', 'col', 'nest_level', 'autobreak', '_last_is_blank']
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper,
                  indent_size: int = 2,
                  linebreak: str = '\n',
@@ -454,20 +478,25 @@ class Formatter():
         self.col = 1
         self.nest_level = 0
         self.autobreak = autobreak
+        self._last_is_blank = False 
 
     def newline(self):
         self.buf.write(self.linebreak)
         self.col = 1
+        self._last_is_blank = False
 
     def _pad_indent(self):
         while self.col <= self.nest_level * self.indent_size:
             self.buf.write(' ')
+            self._last_is_blank = True
             self.col += 1
 
     def blank(self):
+        if self._last_is_blank: return # avoid writing adjacent blanks
         if self.autobreak and self.col > 78:
             self.newline()
         else:
+            self._last_is_blank = True
             self.buf.write(' ')
             self.col += 1
 
@@ -479,6 +508,7 @@ class Formatter():
             self._pad_indent()
         self.buf.write(token)
         self.col += l
+        self._last_is_blank = False
 
     def write(self, node: NodeBase): # generic
         if isinstance(node, TextNode):
@@ -497,10 +527,23 @@ class Formatter():
             for child in node.children:
                 self.write(child)
 
+    def _write_comment(self, comment: str):
+        elements = comment.split()
+        for element in elements:
+            l = len(element)
+            if l + self.col >= self.line_length:
+                self.newline()
+                self.word('% ')
+            self.word(element)
+            self.blank()
+        self.newline()
+
     def _write_text(self, txt: TextNode):
         token = txt.word
         if token == ' ':
             self.blank()
+        elif token.startswith('%'):
+            self._write_comment(token)
         elif token == '\n':
             self.newline()
         else:
