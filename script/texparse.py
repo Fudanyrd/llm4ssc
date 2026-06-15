@@ -441,17 +441,19 @@ def struct_sections(docnode: EnvironNode):
 
 
 class Formatter():
+    __slots__ = ['buf', 'indent_size', 'linebreak', 'line_length', 'col', 'nest_level', 'autobreak']
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper,
                  indent_size: int = 2,
                  linebreak: str = '\n',
-                 line_length: int = 80):
+                 line_length: int = 80,
+                 autobreak: bool = True):
         self.buf = buf # anything that has '.write'
         self.indent_size = indent_size
         self.linebreak = linebreak
         self.line_length = line_length
         self.col = 1
         self.nest_level = 0
-        self.autobreak = True
+        self.autobreak = autobreak
 
     def newline(self):
         self.buf.write(self.linebreak)
@@ -511,13 +513,24 @@ class Formatter():
         self.word('}')
 
     def _write_command(self, cmd: CommandNode):
-        oldval = self.autobreak
-        disable_break = cmd.name in ['label', 'ref'] or cmd.name .startswith('cite')
-        self.autobreak = not disable_break
-        if disable_break and oldval: 
-            self.newline()
-            self._pad_indent()
-        self.word(f'\\{cmd.name}{"*" if not cmd.is_numbered else ""}')
+        disable_break = cmd.name in ['label', 'ref', 'documentclass'] or cmd.name .startswith('cite')
+        first_token = f'\\{cmd.name}{"*" if not cmd.is_numbered else ""}'
+        if disable_break:
+            buf = io.StringIO()
+            aux = Formatter(buf)
+            aux.autobreak = False
+            # aux._write_command(cmd)
+            for opt_arg in cmd.opt_args:
+                aux.word('[')
+                aux.write(opt_arg)
+                aux.word(']')
+            for arg in cmd.args:
+                aux.word('{')
+                aux.write(arg)
+                aux.word('}')
+            self.word(first_token + buf.getvalue())
+            return
+        self.word(first_token)
         for opt_arg in cmd.opt_args:
             self.word('[')
             self.write(opt_arg)
@@ -526,7 +539,6 @@ class Formatter():
             self.word('{')
             self.write(arg)
             self.word('}')
-        self.autobreak = oldval
 
     def _write_section(self, sec: SectionNode):
         self.newline()
@@ -595,11 +607,6 @@ def debug_dump(top: NodeBase, lv: int = 0):
 
 
 if __name__ == '__main__':
-    # tokenizer = FileTokenizer('test.tex')
-    # parser = Parser(tokenizer)
-    # top = ParagraphNode([])
-    # parser.parse_till(top, always_cont)
-    # top = parse_trivial('../src/abs.tex')
     top = parse_trivial(sys.argv[1])
     _expand_include_cmd(top)
     top.recurse(_split_paragraphs)
