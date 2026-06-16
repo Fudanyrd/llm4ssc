@@ -280,10 +280,11 @@ class FileTokenizer(TokenizeBase):
 
         ll = len(self._curline)
         # skip whitespaces
+        start = self._idx
         if self._curline[self._idx] in self.whitespaces:
             while self._curline[self._idx] in self.whitespaces:
                 self._idx += 1
-            return ' ' # parser needs this to separate words.
+            return self._curline[start: self._idx]
 
         if self._curline[self._idx]  == '\n':
             self._idx += 1
@@ -301,7 +302,6 @@ class FileTokenizer(TokenizeBase):
                 raise ValueError("plainTex style $$ math mode is not supported, use \\[...\\] instead.")
             return ret
 
-        start = self._idx
         if self._curline[self._idx] == '\\':
             self._idx += 1
             if not self._curline[self._idx].isalpha():
@@ -354,7 +354,7 @@ class Parser():
                 comment_str += tok[1:].replace('\n', ' ') # skip the leading '%'
             elif tok == '\n':
                 comment_str += ' '
-            elif tok == ' ':
+            elif tok.isspace():
                 comment_str += ' '
             else:
                 self.pending_tokens.append(tok)
@@ -523,6 +523,7 @@ class PrettyWriter():
             self.indent_size = indent_size
             self.linebreak = linebreak
             self.line_length = line_length
+    TAB_WIDTH = 4
 
     __slots__ = ['buf', 'config', 'col', 'nest_level', '_curline', 'autobreakoff']
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper, config: Config = None):
@@ -549,35 +550,47 @@ class PrettyWriter():
         else start a new line. This is useful when we want to
         avoid writing blanks at the beginning of a line.
         """
+        if not self.autobreak(): return
         if self._curline.isspace() or self._curline == '':
             self.clear_current_line()
         else:
             self.newline()
 
     def finish(self):
-        self._curline = self._curline.rstrip()
+        if self.autobreak():
+            self._curline = self._curline.rstrip()
         if self._curline != '':
             self.buf.write(self._curline)
             self.buf.write(self.config.linebreak)
 
     def newline(self):
         # rm trailing spaces.
-        self.buf.write(self._curline.rstrip())
+        if self.autobreak():
+            self.buf.write(self._curline.rstrip())
+        else:
+            self.buf.write(self._curline)
         self._curline = ''
         self.buf.write(self.config.linebreak)
         self.col = 1
 
-    def blank(self):
-        if self._curline.endswith(' '):
-            return # avoid writing adjacent blanks
-        # avoid writing blanks at the beginning of a line(?)
-        # if len(self._curline) == 0:
-        #     return 
-        if self.autobreak() and self.col > self.config.line_length-2:
-            self.newline()
-        else:
-            self._curline += ' '
+    def blank(self, blanks: str):
+        if self.autobreak():
+            if self.col > 1 and self._curline[-1].isspace():
+                return # avoid writing adjacent blanks
+            if self.col > self.config.line_length:
+                self.newline()
+            self._curline += ' ' # only write one blank
             self.col += 1
+        else:
+            # autobreak disabled. write `blanks` as is, and update column accordingly.
+            self._curline += blanks
+            for ch in blanks:
+                if ch == '\t':
+                    self.col += self.TAB_WIDTH
+                elif ch == ' ':
+                    self.col += 1
+                else:
+                    raise ValueError(f'Invalid blank character {bytes(ch, encoding="utf-8")}.')
 
     def word(self, token: str):
         """
@@ -717,11 +730,31 @@ class Formatter():
         formatter.writer.clear_or_break()
         formatter.word(f'\\end{{{env.dump_name()}}}')
 
+    def listing_environ_formatter(formatter: 'Formatter', env: EnvironNode):
+        formatter.word(f'\\begin{{{env.dump_name()}}}')
+        formatter.writer.autobreak_off() # do not break in listing environment, for better formatting.
+        for arg in env.args:
+            formatter.word('{')
+            formatter.write(arg)
+            formatter.word('}')
+        for opt_arg in env.opt_args:
+            formatter.word('[')
+            formatter.write(opt_arg)
+            formatter.word(']')
+
+        # disable auto break when writing code snippets.
+        for child in env.children:
+            formatter.write(child)
+        formatter.writer.autobreak_on()
+        formatter.word(f'\\end{{{env.dump_name()}}}')
+
     # configure custom formatters for specific environments here.
     custom_environ_formatters = {
         'tabular': tabular_environ_formatter,
         'enumerate': list_environ_formatter,
         'itemize': list_environ_formatter,
+        'lstlisting': listing_environ_formatter,
+        'minted': listing_environ_formatter,
     }
 
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper,
@@ -737,8 +770,8 @@ class Formatter():
     def newline(self):
         self.writer.newline()
 
-    def blank(self):
-        self.writer.blank()
+    def blank(self, blanks):
+        self.writer.blank(blanks)
 
     def word(self, token: str):
         self.writer.word(token)
@@ -761,6 +794,19 @@ class Formatter():
                 self.write(child)
 
     def _write_comment(self, comment: str):
+        if not self.writer.autobreak():
+            # should not interpret current token as comment, 
+            # since auto break is disabled. write it as is.
+            self.word(comment)
+            if comment.endswith('\n'):
+                # as is often the case,
+                # in the tokenizer stage, '\n' is
+                # added to a comment token,
+                # so we silenctly start a new line.
+                self.writer.buf.write(self.writer._curline)
+                self.writer.col = 1
+                self.writer._curline = ''
+            return
         elements = comment.split()
         for element in elements:
             l = len(element)
@@ -768,17 +814,17 @@ class Formatter():
                 self.newline()
                 self.word('% ')
             self.word(element)
-            self.blank()
+            self.blank(' ')
         self.newline()
 
     def _write_text(self, txt: TextNode):
         token = txt.word
-        if token == ' ':
-            self.blank()
+        if token == '\n':
+            self.newline()
         elif token.startswith('%'):
             self._write_comment(token)
-        elif token == '\n':
-            self.newline()
+        elif token.isspace():
+            self.blank(token)
         else:
             self.word(txt.word)
 
@@ -832,7 +878,8 @@ class Formatter():
         self.newline()
 
     def _write_environ(self, env: EnvironNode):
-        if env.name in self.custom_environ_formatters:
+        if env.name in self.custom_environ_formatters and \
+            self.writer.autobreak():
             self.custom_environ_formatters[env.name](self, env)
             return
 
