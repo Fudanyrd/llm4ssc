@@ -13,12 +13,20 @@ class NodeBase():
         for child in self.children:
             child.recurse(action)
 
+    def fmt(self, buf: io.TextIOBase | io.TextIOWrapper):
+        """Format the content in compact form, without extra line breaks or indentation."""
+        for child in self.children:
+            child.fmt(buf)
+
 
 class TextNode(NodeBase):
     __slots__ = ['word'] # a 'token' which contains no whitespaces.
     def __init__(self, word: str):
         super().__init__([]) # no children
         self.word = word
+
+    def fmt(self, buf: io.TextIOBase | io.TextIOWrapper):
+        buf.write(self.word)
 
     def __repr__(self):
         return self.word
@@ -56,6 +64,17 @@ class CommandNode(NodeBase):
     def is_section_cmd(self):
         return self.name in self.section_cmds
 
+    def fmt(self, buf: io.TextIOBase | io.TextIOWrapper):
+        buf.write('\\' + self.name)
+        for opt_arg in self.opt_args:
+            buf.write('[')
+            opt_arg.fmt(buf)
+            buf.write(']')
+        for arg in self.args:
+            buf.write('{')
+            arg.fmt(buf)
+            buf.write('}')
+
 class ParagraphNode(NodeBase):
     """Represents a paragraph."""
     __slots__ = []
@@ -78,6 +97,26 @@ class SectionNode(NodeBase):
         self.name_node = name_node
         self.is_numbered = is_numbered
 
+    def fmt(self, buf: io.TextIOBase | io.TextIOWrapper):
+        if self.kind == self.SectionKind.CHAPTER:
+            buf.write('\\chapter')
+        elif self.kind == self.SectionKind.SECTION:
+            buf.write('\\section')
+        elif self.kind == self.SectionKind.SUBSECTION:
+            buf.write('\\subsection')
+        elif self.kind == self.SectionKind.SUBSUBSECTION:
+            buf.write('\\subsubsection')
+        else:
+            raise ValueError('Invalid section kind.')
+
+        if not self.is_numbered:
+            buf.write('*')
+        buf.write('{')
+        self.name_node.fmt(buf)
+        buf.write('}')
+        for child in self.children:
+            child.fmt(buf)
+
 
 class EnvironNode(NodeBase):
     """Represents an environment, e.g.
@@ -97,6 +136,23 @@ class EnvironNode(NodeBase):
         self.args = args
         self.opt_args = optional_args
         self.is_numbered = is_numbered
+
+    def dump_name(self):
+        return self.name + ('*' if not self.is_numbered else '')
+
+    def fmt(self, buf: io.TextIOBase | io.TextIOWrapper):
+        buf.write(f'\\begin{{{self.dump_name()}}}')
+        for arg in self.args:
+            buf.write('{')
+            arg.fmt(buf)
+            buf.write('}')
+        for opt_arg in self.opt_args:
+            buf.write('[')
+            opt_arg.fmt(buf)
+            buf.write(']')
+        for child in self.children:
+            child.fmt(buf)
+        buf.write(f'\\end{{{self.dump_name()}}}')
 
     @staticmethod
     def _check_and_append(children: list[NodeBase], child: ParagraphNode):
@@ -184,7 +240,7 @@ class TokenizeBase():
 
 
 class FileTokenizer(TokenizeBase):
-    argument_seq = ['[', ']', '{', '}']
+    argument_seq = ['[', ']', '{', '}', '$']
     whitespaces = [' ', '\t']
     def __init__(self, pth: str):
         self.fobj = open(pth, 'r', encoding='utf-8')
@@ -224,6 +280,8 @@ class FileTokenizer(TokenizeBase):
         if self._curline [self._idx] in self.argument_seq:
             ret = self._curline[self._idx]
             self._idx += 1;
+            if ret == '$' and self._curline[self._idx] == '$':
+                raise ValueError("plainTex style $$ math mode is not supported, use \\[...\\] instead.")
             return ret
 
         start = self._idx
@@ -249,6 +307,7 @@ class Parser():
     matcher = {
         '{': '}',
         '[': ']',
+        '$': '$', # inline math mode
     }
     def __init__(self, tokenizer: TokenizeBase):
         self.pending_tokens = []
@@ -385,6 +444,15 @@ class Parser():
                 # self.match_brace(block, tok)
                 self.parse_till(block, self._text_block_end)
                 parent.children.append(block)
+            elif tok == '$':
+                # handle inline math mode.
+                block = EnvironNode('math', [], [], [], is_numbered=True)
+                self.parse_till(block, lambda t: t == '$')
+                parent.children.append(block)
+            elif tok == '\\[':
+                block = EnvironNode('displaymath', [], [], [], is_numbered=True)
+                self.parse_till(block, lambda t: t == '\\]')
+                parent.children.append(block)
             else:
                 # handle text token.
                 parent.children.append(TextNode(tok))
@@ -435,7 +503,7 @@ def struct_sections(docnode: EnvironNode):
     Structure those  command nodes representing article
     sections as a tree.
     """
-    newroot = EnvironNode('document', [], [], [], is_numbered=False)
+    newroot = EnvironNode('document', [], [], [], is_numbered=True)
     top = SectionNode(SectionNode.SectionKind.TOP, '', False, [])
     stack = [top]
 
@@ -609,7 +677,7 @@ class Formatter():
         self.newline()
 
     def _write_environ(self, env: EnvironNode):
-        self.word(f'\\begin{{{env.name}}}')
+        self.word(f'\\begin{{{env.dump_name()}}}')
         for arg in env.args:
             self.word('{')
             self.write(arg)
@@ -626,7 +694,7 @@ class Formatter():
             self.write(child)
         self.nest_level -= nl_inc
         self.newline()
-        self.word(f'\\end{{{env.name}}}')
+        self.word(f'\\end{{{env.dump_name()}}}')
 
     def _write_paragraph(self, par: ParagraphNode):
         # leave an empty line for readability
