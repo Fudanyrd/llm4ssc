@@ -509,6 +509,7 @@ def _expand_include_cmd(node: NodeBase):
                         pth += '.tex'
                     if os.path.exists(pth):
                         new_node = parse_trivial(pth)
+                        _expand_include_cmd(new_node)
                         children += new_node.children
                     else:
                         raise FileNotFoundError(f'Included file {pth} not found.')
@@ -928,6 +929,62 @@ def debug_dump(top: NodeBase, lv: int = 0):
     for child in top.children:
         debug_dump(child, lv + 1)
 
+import tempfile, subprocess
+
+class TikzFilter():
+    """
+    Traverse to find tikz pictures, extract them to compile to separate PDF files,
+    and replace them with \includegraphics commands.
+    """
+    TEMPDIR = '.tikz'
+    def compile_tikz(self, tikz: EnvironNode) -> str:
+        """
+        :return: name of output file.
+        """
+        tex_pth = tempfile.mkstemp(dir=self.TEMPDIR, suffix='.tex')[1]
+        assert tikz.name == 'tikzpicture'
+        tikz.is_numbered = True
+        with open(tex_pth, 'w', encoding='utf-8') as f:
+            f.write(self.predef_buf.getvalue())
+            formatter = Formatter(f)
+            formatter.write(tikz)
+            formatter.finish()
+            f.write('\\end{document}\n')
+
+        pdf_generator = os.environ.get("PDFGEN", "pdflatex")
+        subprocess.run([pdf_generator, '-halt-on-error', '-shell-escape', '-output-directory', self.TEMPDIR, tex_pth])
+        ret = os.path.splitext(os.path.basename(tex_pth))[0] + '.pdf'
+        return os.path.join(self.TEMPDIR, ret)
+
+    def _foreach_node(self, node: NodeBase):
+        for i, child in enumerate(node.children):
+            if isinstance(child, EnvironNode) and child.name == 'tikzpicture':
+                # found a tikz picture, replace it with \includegraphics command.
+                pth = self.compile_tikz(child)
+                node.children[i] = CommandNode('includegraphics', [NodeBase([TextNode(pth)])], [])
+            else:
+                self._foreach_node(child)
+
+    def __init__(self, top: NodeBase):
+        self.top = top
+        self.tikz_cnt = 0
+        os.makedirs(TikzFilter.TEMPDIR, exist_ok=True) # use as a temp directory to store extracted tikz pictures.
+        self.predef_buf = io.StringIO()
+        self.predef_buf.write('\\documentclass{standalone}\n')
+        for child in top.children:
+            if isinstance(child, EnvironNode) and child.name == 'document':
+                break
+            elif isinstance(child, CommandNode) and child.name == 'documentclass':
+                continue # ignored
+            else:
+                # append \usetikzlibrary, \usepackage, etc.
+                formatter = Formatter(self.predef_buf)
+                formatter.write(child)
+                formatter.finish()
+        self.predef_buf.write('\n\\begin{document}\n')
+
+    def invoke(self):
+        self._foreach_node(self.top)
 
 if __name__ == '__main__':
     top = parse_trivial(sys.argv[1])
@@ -940,6 +997,9 @@ if __name__ == '__main__':
             break
 
     # debug_dump(top)
+    if len(sys.argv) > 2 and sys.argv[2] == '--tikz-filter':
+        tikz_filter = TikzFilter(top)
+        tikz_filter.invoke()
 
     buf = io.StringIO()
     formatter = Formatter(buf)
