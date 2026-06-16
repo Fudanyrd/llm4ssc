@@ -533,7 +533,9 @@ def struct_sections(docnode: EnvironNode):
 
 
 class Formatter():
-    __slots__ = ['buf', 'indent_size', 'linebreak', 'line_length', 'col', 'nest_level', 'autobreak', '_last_is_blank']
+    __slots__ = ['buf', 'indent_size', 'linebreak', 
+                 'line_length', 'col', 'nest_level', 
+                 'autobreak', '_curline']
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper,
                  indent_size: int = 2,
                  linebreak: str = '\n',
@@ -546,37 +548,47 @@ class Formatter():
         self.col = 1
         self.nest_level = 0
         self.autobreak = autobreak
-        self._last_is_blank = False 
+        self._curline = ''
+
+    def finish(self):
+        self._curline = self._curline.rstrip()
+        if self._curline != '':
+            self.buf.write(self._curline)
+            self.buf.write(self.linebreak)
 
     def newline(self):
+        # rm trailing spaces.
+        self.buf.write(self._curline.rstrip())
+        self._curline = ''
         self.buf.write(self.linebreak)
         self.col = 1
-        self._last_is_blank = False
 
     def _pad_indent(self):
-        while self.col <= self.nest_level * self.indent_size:
-            self.buf.write(' ')
-            self._last_is_blank = True
-            self.col += 1
+        npad = self.nest_level * self.indent_size - self.col + 1
+        if npad > 0:
+            self._curline += ' ' * npad
+            self.col += npad
 
     def blank(self):
-        if self._last_is_blank: return # avoid writing adjacent blanks
-        if self.autobreak and self.col > 78:
+        if self._curline.endswith(' '):
+            return # avoid writing adjacent blanks
+        # avoid writing blanks at the beginning of a line(?)
+        # if len(self._curline) == 0:
+        #     return 
+        if self.autobreak and self.col > self.line_length-2:
             self.newline()
         else:
-            self._last_is_blank = True
-            self.buf.write(' ')
+            self._curline += ' '
             self.col += 1
 
     def word(self, token: str):
         l = len(token)
         if self.autobreak:
-            if self.col + l >= self.line_length:
+            if self.col + l > self.line_length:
                 self.newline()
             self._pad_indent()
-        self.buf.write(token)
+        self._curline += token
         self.col += l
-        self._last_is_blank = False
 
     def write(self, node: NodeBase): # generic
         if isinstance(node, TextNode):
@@ -639,7 +651,8 @@ class Formatter():
                 aux.word('{')
                 aux.write(arg)
                 aux.word('}')
-            self.word(first_token + buf.getvalue())
+            aux.finish()
+            self.word(first_token + buf.getvalue().rstrip())
             return
         self.word(first_token)
         for opt_arg in cmd.opt_args:
@@ -732,5 +745,6 @@ if __name__ == '__main__':
     buf = io.StringIO()
     formatter = Formatter(buf)
     formatter.write(top)
+    formatter.finish()
     print(buf.getvalue())
 
