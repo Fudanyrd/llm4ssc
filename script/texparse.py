@@ -127,6 +127,15 @@ class EnvironNode(NodeBase):
     ```
     """
     __slots__ = ['name', 'is_numbered', 'args', 'opt_args']
+    NO_AUTOBREAK_ENVIRONS = set([
+        # source code
+        'minted',
+        'lstlisting',
+    ])
+    # in these environs, line break '\n' is the same as blank.
+    LINE_TO_BLANK_ENVIRONS = {
+        'tabular',
+    }
     def __init__(self, name: str, children: list[NodeBase], 
                  args: list[NodeBase],
                  optional_args: list[NodeBase],
@@ -175,6 +184,14 @@ class EnvironNode(NodeBase):
         method will split them into several paragraphs, i.e.
         group the children into ParagraphNodes.
         """
+        if self.name in self.NO_AUTOBREAK_ENVIRONS:
+            return # do not split these environments, for better formatting.
+        if self.name in self.LINE_TO_BLANK_ENVIRONS:
+            for i, child in enumerate(self.children):
+                if isinstance(child, TextNode) and child.is_linebreak():
+                    self.children[i] = TextNode(' ')
+            return
+
         splits: list[NodeBase] = []
         cur_para:NodeBase = ParagraphNode([])
         linebreak: bool = False
@@ -507,14 +524,35 @@ class PrettyWriter():
             self.linebreak = linebreak
             self.line_length = line_length
 
-    __slots__ = ['buf', 'config', 'col', 'nest_level', '_curline', 'autobreak']
+    __slots__ = ['buf', 'config', 'col', 'nest_level', '_curline', 'autobreakoff']
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper, config: Config = None):
         self.buf = buf
         self.config = config if config else self.Config()
         self.col = 1
         self.nest_level = 0
         self._curline = ''
-        self.autobreak = True
+        self.autobreakoff = 0
+
+    def autobreak(self) -> bool: return self.autobreakoff == 0
+
+    def autobreak_off(self): self.autobreakoff += 1
+    def autobreak_on(self):
+        if self.autobreakoff > 0: self.autobreakoff -= 1
+
+    def clear_current_line(self):
+        self._curline = ''
+        self.col = 1
+
+    def clear_or_break(self):
+        """
+        If current line is filled with space, then clear it;
+        else start a new line. This is useful when we want to
+        avoid writing blanks at the beginning of a line.
+        """
+        if self._curline.isspace() or self._curline == '':
+            self.clear_current_line()
+        else:
+            self.newline()
 
     def finish(self):
         self._curline = self._curline.rstrip()
@@ -535,7 +573,7 @@ class PrettyWriter():
         # avoid writing blanks at the beginning of a line(?)
         # if len(self._curline) == 0:
         #     return 
-        if self.autobreak and self.col > self.config.line_length-2:
+        if self.autobreak() and self.col > self.config.line_length-2:
             self.newline()
         else:
             self._curline += ' '
@@ -547,7 +585,7 @@ class PrettyWriter():
         use `blank` (`newline`) instead, for better formatting.
         """
         l = len(token)
-        if self.autobreak:
+        if self.autobreak():
             if self.col + l > self.config.line_length:
                 self.newline()
             self.pad_indent()
@@ -611,6 +649,81 @@ def struct_sections(docnode: EnvironNode):
 
 class Formatter():
     __slots__ = ['writer']
+    NOBREAK_CMDS = set([
+        # citation
+        'cite', 'citep', 'citenum', 'citet', 'citeauthor', 'citeyear',
+        # path/url
+        'url', 'includegraphics', 'input', 'include',
+        # label/ref
+        'label', 'ref', 'pageref',
+        # documentclass
+        'documentclass',
+        # text manipulation
+        'textbf', 'textit', 'emph', 'texttt',
+    ])
+
+    @staticmethod
+    def tabular_environ_formatter(formatter: 'Formatter', env: EnvironNode):
+        formatter.word(f'\\begin{{{env.dump_name()}}}')
+        formatter.writer.autobreak_off() # do not break in tabular environment, for better formatting.
+        for arg in env.args:
+            formatter.word('{')
+            formatter.write(arg)
+            formatter.word('}')
+        for opt_arg in env.opt_args:
+            formatter.word('[')
+            formatter.write(opt_arg)
+            formatter.word(']')
+        formatter.writer.autobreak_on()
+        formatter.newline()
+
+        for child in env.children:
+            if isinstance(child, CommandNode) and child.name == 'hline':
+                formatter.writer.clear_or_break()
+                formatter.write(child)
+                formatter.newline()
+            elif isinstance(child, TextNode) and child.word == '\\\\':
+                formatter.write(child)
+                formatter.newline()
+            else:
+                formatter.write(child)
+
+        formatter.writer.clear_or_break()
+        formatter.word(f'\\end{{{env.dump_name()}}}')
+
+    @staticmethod
+    def list_environ_formatter(formatter: 'Formatter', env: EnvironNode):
+        formatter.word(f'\\begin{{{env.dump_name()}}}')
+        for arg in env.args:
+            formatter.word('{')
+            formatter.write(arg)
+            formatter.word('}')
+        for opt_arg in env.opt_args:
+            formatter.word('[')
+            formatter.write(opt_arg)
+            formatter.word(']')
+        formatter.newline()
+
+        for child in env.children:
+            if isinstance(child, CommandNode) and child.name == 'item':
+                formatter.writer.clear_or_break()
+                formatter.write(child)
+            elif isinstance(child, ParagraphNode):
+                formatter.writer.clear_or_break()
+                formatter.write(child)
+            else:
+                formatter.write(child)
+
+        formatter.writer.clear_or_break()
+        formatter.word(f'\\end{{{env.dump_name()}}}')
+
+    # configure custom formatters for specific environments here.
+    custom_environ_formatters = {
+        'tabular': tabular_environ_formatter,
+        'enumerate': list_environ_formatter,
+        'itemize': list_environ_formatter,
+    }
+
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper,
                  indent_size: int = 2,
                  linebreak: str = '\n',
@@ -676,7 +789,7 @@ class Formatter():
         self.word('}')
 
     def _write_command(self, cmd: CommandNode):
-        disable_break = cmd.name in ['label', 'ref', 'documentclass'] or cmd.name .startswith('cite')
+        disable_break = cmd.name in self.NOBREAK_CMDS
         first_token = f'\\{cmd.name}{"*" if not cmd.is_numbered else ""}'
         if disable_break:
             aux = io.StringIO()
@@ -719,6 +832,14 @@ class Formatter():
         self.newline()
 
     def _write_environ(self, env: EnvironNode):
+        if env.name in self.custom_environ_formatters:
+            self.custom_environ_formatters[env.name](self, env)
+            return
+
+        autobreakoff = env.name in EnvironNode.NO_AUTOBREAK_ENVIRONS
+        if autobreakoff: self.writer.autobreak_off()
+
+        # use default formatting implementation.
         self.word(f'\\begin{{{env.dump_name()}}}')
         for arg in env.args:
             self.word('{')
@@ -737,6 +858,8 @@ class Formatter():
         self.writer.nest_level -= nl_inc
         self.newline()
         self.word(f'\\end{{{env.dump_name()}}}')
+
+        if autobreakoff: self.writer.autobreak_on()
 
     def _write_paragraph(self, par: ParagraphNode):
         # leave an empty line for readability
