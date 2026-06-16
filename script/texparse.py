@@ -497,6 +497,83 @@ def _expand_include_cmd(node: NodeBase):
                         raise FileNotFoundError(f'Included file {pth} not found.')
     node.children = children
 
+class PrettyWriter():
+    class Config():
+        __slots__ = ['indent_size', 'linebreak', 'line_length']
+        def __init__(self, indent_size: int = 2,
+                     linebreak: str = '\n',
+                     line_length: int = 80):
+            self.indent_size = indent_size
+            self.linebreak = linebreak
+            self.line_length = line_length
+
+    __slots__ = ['buf', 'config', 'col', 'nest_level', '_curline', 'autobreak']
+    def __init__(self, buf: io.TextIOBase | io.TextIOWrapper, config: Config = None):
+        self.buf = buf
+        self.config = config if config else self.Config()
+        self.col = 1
+        self.nest_level = 0
+        self._curline = ''
+        self.autobreak = True
+
+    def finish(self):
+        self._curline = self._curline.rstrip()
+        if self._curline != '':
+            self.buf.write(self._curline)
+            self.buf.write(self.config.linebreak)
+
+    def newline(self):
+        # rm trailing spaces.
+        self.buf.write(self._curline.rstrip())
+        self._curline = ''
+        self.buf.write(self.config.linebreak)
+        self.col = 1
+
+    def blank(self):
+        if self._curline.endswith(' '):
+            return # avoid writing adjacent blanks
+        # avoid writing blanks at the beginning of a line(?)
+        # if len(self._curline) == 0:
+        #     return 
+        if self.autobreak and self.col > self.config.line_length-2:
+            self.newline()
+        else:
+            self._curline += ' '
+            self.col += 1
+
+    def word(self, token: str):
+        """
+        Using this method to write blank(s) or linebreak is incorrect,
+        use `blank` (`newline`) instead, for better formatting.
+        """
+        l = len(token)
+        if self.autobreak:
+            if self.col + l > self.config.line_length:
+                self.newline()
+            self.pad_indent()
+        self._curline += token
+        self.col += l
+
+    def pad_indent(self):
+        npad = self.nest_level * self.config.indent_size - self.col + 1
+        if npad > 0:
+            self._curline += ' ' * npad
+            self.col += npad
+
+    def rem(self) -> int:
+        """
+        :returns: number of bytes that can still be written in the current line without breaking.
+        """
+        return self.config.line_length - self.col + 1
+
+    def enter(self):
+        self.nest_level += 1
+    
+    def leave(self):
+        self.nest_level -= 1
+        if self.nest_level < 0:
+            raise ValueError('Negative nest level.')
+
 
 def struct_sections(docnode: EnvironNode):
     """
@@ -533,62 +610,25 @@ def struct_sections(docnode: EnvironNode):
 
 
 class Formatter():
-    __slots__ = ['buf', 'indent_size', 'linebreak', 
-                 'line_length', 'col', 'nest_level', 
-                 'autobreak', '_curline']
+    __slots__ = ['writer']
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper,
                  indent_size: int = 2,
                  linebreak: str = '\n',
-                 line_length: int = 80,
-                 autobreak: bool = True):
-        self.buf = buf # anything that has '.write'
-        self.indent_size = indent_size
-        self.linebreak = linebreak
-        self.line_length = line_length
-        self.col = 1
-        self.nest_level = 0
-        self.autobreak = autobreak
-        self._curline = ''
+                 line_length: int = 80):
+        config: PrettyWriter.Config = PrettyWriter.Config(indent_size, linebreak, line_length)
+        self.writer = PrettyWriter(buf, config)
 
     def finish(self):
-        self._curline = self._curline.rstrip()
-        if self._curline != '':
-            self.buf.write(self._curline)
-            self.buf.write(self.linebreak)
+        self.writer.finish()
 
     def newline(self):
-        # rm trailing spaces.
-        self.buf.write(self._curline.rstrip())
-        self._curline = ''
-        self.buf.write(self.linebreak)
-        self.col = 1
-
-    def _pad_indent(self):
-        npad = self.nest_level * self.indent_size - self.col + 1
-        if npad > 0:
-            self._curline += ' ' * npad
-            self.col += npad
+        self.writer.newline()
 
     def blank(self):
-        if self._curline.endswith(' '):
-            return # avoid writing adjacent blanks
-        # avoid writing blanks at the beginning of a line(?)
-        # if len(self._curline) == 0:
-        #     return 
-        if self.autobreak and self.col > self.line_length-2:
-            self.newline()
-        else:
-            self._curline += ' '
-            self.col += 1
+        self.writer.blank()
 
     def word(self, token: str):
-        l = len(token)
-        if self.autobreak:
-            if self.col + l > self.line_length:
-                self.newline()
-            self._pad_indent()
-        self._curline += token
-        self.col += l
+        self.writer.word(token)
 
     def write(self, node: NodeBase): # generic
         if isinstance(node, TextNode):
@@ -611,7 +651,7 @@ class Formatter():
         elements = comment.split()
         for element in elements:
             l = len(element)
-            if l + self.col >= self.line_length:
+            if l >= self.writer.rem() - 1:
                 self.newline()
                 self.word('% ')
             self.word(element)
@@ -639,20 +679,9 @@ class Formatter():
         disable_break = cmd.name in ['label', 'ref', 'documentclass'] or cmd.name .startswith('cite')
         first_token = f'\\{cmd.name}{"*" if not cmd.is_numbered else ""}'
         if disable_break:
-            buf = io.StringIO()
-            aux = Formatter(buf)
-            aux.autobreak = False
-            # aux._write_command(cmd)
-            for opt_arg in cmd.opt_args:
-                aux.word('[')
-                aux.write(opt_arg)
-                aux.word(']')
-            for arg in cmd.args:
-                aux.word('{')
-                aux.write(arg)
-                aux.word('}')
-            aux.finish()
-            self.word(first_token + buf.getvalue().rstrip())
+            aux = io.StringIO()
+            cmd.fmt(aux)
+            self.word(aux.getvalue())
             return
         self.word(first_token)
         for opt_arg in cmd.opt_args:
@@ -666,7 +695,7 @@ class Formatter():
 
     def _write_section(self, sec: SectionNode):
         self.newline()
-        self.nest_level = 0
+        self.writer.nest_level = 0
         if sec.kind == SectionNode.SectionKind.CHAPTER:
             self.word('\\chapter')
         elif sec.kind == SectionNode.SectionKind.SECTION:
@@ -702,10 +731,10 @@ class Formatter():
         self.newline()
 
         nl_inc = int( 'document' != env.name )
-        self.nest_level += nl_inc
+        self.writer.nest_level += nl_inc
         for child in env.children:
             self.write(child)
-        self.nest_level -= nl_inc
+        self.writer.nest_level -= nl_inc
         self.newline()
         self.word(f'\\end{{{env.dump_name()}}}')
 
