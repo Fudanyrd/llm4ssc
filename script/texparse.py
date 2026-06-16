@@ -9,7 +9,9 @@ class NodeBase():
         self.children: list[NodeBase] = children
 
     def recurse(self, action):
-        action(self)
+        descend = bool(action(self))
+        if not descend:
+            return
         for child in self.children:
             child.recurse(action)
 
@@ -131,6 +133,7 @@ class EnvironNode(NodeBase):
         # source code
         'minted',
         'lstlisting',
+        'tikzpicture',
     ])
     # in these environs, line break '\n' is the same as blank.
     LINE_TO_BLANK_ENVIRONS = {
@@ -341,41 +344,10 @@ class Parser():
             del self.pending_tokens[0]
             return ret
         tok = self.tokenizer.next()
-        if not self._is_comment(tok):
-            return tok
-        
-        # concatenate adjacent comment tokens into one, for better formatting later.
-        comment_str = tok.replace('\n', ' ')
-        while True:
-            tok = self.tokenizer.next()
-            if tok is None:
-                break
-            elif self._is_comment(tok):
-                comment_str += tok[1:].replace('\n', ' ') # skip the leading '%'
-            elif tok == '\n':
-                comment_str += ' '
-            elif tok.isspace():
-                comment_str += ' '
-            else:
-                self.pending_tokens.append(tok)
-                break
-        return comment_str + '\n'
-
+        return tok
 
     def match_brace(self, node: NodeBase, cur: str):
-        while True:
-            tok = self._next()
-            if tok is None:
-                break
-            if tok == self.matcher[cur]:
-                break
-            if tok in self.matcher:
-                # nested brace, recursively match it.
-                new_node = TextBlockNode([])
-                self.match_brace(new_node, tok)
-                node.children.append(new_node)
-            else:
-                node.children.append(TextNode(tok))
+        self.parse_till(node, lambda t: t == self.matcher[cur])
 
     def fill_command(self, cmd: CommandNode, first_token: str):
         assert first_token.startswith('\\')
@@ -480,6 +452,10 @@ def always_cont(tok:str) : return False
 def _split_paragraphs(node: NodeBase):
     if isinstance(node, EnvironNode):
         node.split_by_paragraphs()
+
+    if isinstance(node, EnvironNode) and node.name in EnvironNode.NO_AUTOBREAK_ENVIRONS:
+        return False
+    return True
 
 def parse_trivial(main_tex: str) -> NodeBase:
     """
@@ -756,6 +732,7 @@ class Formatter():
         'itemize': list_environ_formatter,
         'lstlisting': listing_environ_formatter,
         'minted': listing_environ_formatter,
+        'tikzpicture': listing_environ_formatter, # treat as DSL.
     }
 
     def __init__(self, buf: io.TextIOBase | io.TextIOWrapper,
@@ -897,14 +874,14 @@ class Formatter():
             self.word('[')
             self.write(opt_arg)
             self.word(']')
-        self.newline()
+        if self.writer.autobreak(): self.newline()
 
         nl_inc = int( 'document' != env.name )
         self.writer.nest_level += nl_inc
         for child in env.children:
             self.write(child)
         self.writer.nest_level -= nl_inc
-        self.newline()
+        if self.writer.autobreak(): self.newline()
         self.word(f'\\end{{{env.dump_name()}}}')
 
         if autobreakoff: self.writer.autobreak_on()
@@ -954,7 +931,7 @@ class TikzFilter():
         pdf_generator = os.environ.get("PDFGEN", "pdflatex")
         subprocess.run([pdf_generator, '-halt-on-error', '-shell-escape', '-output-directory', self.TEMPDIR, tex_pth])
         ret = os.path.splitext(os.path.basename(tex_pth))[0] + '.pdf'
-        return os.path.join(self.TEMPDIR, ret)
+        return self.TEMPDIR + "/" + ret
 
     def _foreach_node(self, node: NodeBase):
         for i, child in enumerate(node.children):
