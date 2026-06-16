@@ -964,7 +964,29 @@ class TikzFilter():
         self._foreach_node(self.top)
 
 if __name__ == '__main__':
-    top = parse_trivial(sys.argv[1])
+    import argparse
+
+    MANUAL = """\
+Usage: texparse.py [-h,--help] [--tikz-filter] [-o,--output <output file>] <input.tex>
+
+Description:
+  --tikz-filter: if set, all tikzpicture will be built separately,
+                 and be replaced by includegraphics command.
+  -o,--output: path to output (can also be '-' implying stdout), default: '-'
+"""
+
+    argparser = argparse.ArgumentParser(description='A simple LaTeX parser and pretty printer.',
+                                formatter_class=argparse.RawTextHelpFormatter,
+                                usage=MANUAL)
+    argparser.add_argument('input', help='input LaTeX file')
+    argparser.add_argument('--tikz-filter', action='store_true', help='if set, all tikzpicture will be built separately, and be replaced by includegraphics command.')
+    argparser.add_argument('-o', '--output', default='-', help="path to output (can also be '-' implying stdout), default: '-'")
+    args = argparser.parse_args()
+
+    ifile = args.input
+    ofile = sys.stdout if args.output == '-' else open(args.output, 'w', encoding='utf-8')
+
+    top = parse_trivial(ifile)
     _expand_include_cmd(top)
     top.recurse(_split_paragraphs)
 
@@ -974,13 +996,12 @@ if __name__ == '__main__':
             break
 
     # debug_dump(top)
-    if len(sys.argv) > 2 and sys.argv[2] == '--tikz-filter':
+    if args.tikz_filter:
         tikz_filter = TikzFilter(top)
         tikz_filter.invoke()
 
-    buf = io.StringIO()
-    formatter = Formatter(buf)
+    formatter = Formatter(ofile)
     formatter.write(top)
     formatter.finish()
-    print(buf.getvalue())
+    ofile.close()
 
